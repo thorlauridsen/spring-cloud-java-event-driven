@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payment-table
+      author: thorlauridsen
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time
+                  type: TIMESTAMP WITH TIMEZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: DOUBLE
+                  constraints:
+                    nullable: false

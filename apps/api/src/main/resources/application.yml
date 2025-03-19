@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: sample
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /
