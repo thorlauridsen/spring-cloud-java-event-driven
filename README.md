@@ -1,8 +1,8 @@
-# Spring Boot Java Event-driven architecture
+# Spring Cloud Java Event-driven architecture
 
 This is a sample project for how you can set up a
 [multi-project Gradle build](https://docs.gradle.org/current/userguide/multi_project_builds.html)
-using [Spring Boot](https://github.com/spring-projects/spring-boot),
+using [Spring Cloud AWS](https://github.com/awspring/spring-cloud-aws),
 [Java](https://www.java.com)
 and [Event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture).
 You can copy or fork this project to quickly set up a
