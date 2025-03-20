@@ -37,6 +37,7 @@ public class PaymentServiceTest {
     public void processOrderCreated() {
         var event = new OrderCreatedEvent(
                 UUID.randomUUID(),
+                UUID.randomUUID(),
                 "Computer",
                 199.0
         );
