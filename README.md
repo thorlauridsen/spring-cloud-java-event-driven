@@ -66,14 +66,33 @@ Below you can see a table presenting the two possible flows.
 
 ## Patterns
 
+### Choreography-based saga
+[microservices.io](https://microservices.io/patterns/data/saga.html)
+
+The **order** and **payment** service are part of a **choreography-based saga**.
+Each service is responsible for its own domain, and they communicate through events.
+Once an event is published, the producer does not know how another service might 
+consume and process it. Services simply react to consumed events and publish new events.
+If we had a central orchestrator, it would be called an **orchestration-based saga**.
+
 ### Transactional outbox
 [microservices.io](https://microservices.io/patterns/data/transactional-outbox.html)
 
-The problem is that if we save to the database and publish an event at the same time,
-we cannot guarantee that the database transaction has been committed before the event is published
-and consumed somewhere else. In that case, it could for example cause an issue where 
-the **order** service consumes another event before the order has ever been saved to the database.
-This can lead to data inconsistency.
+A common issue with event-driven architecture is ensuring that state has been saved
+to the database before an event is published. If we try to save an entity to the database
+and publish an event at the same time, it can lead to issues as the database transaction
+may not have been committed before the event is published.
+
+Example issue:
+1. **Order** service tries to save an order to the database.
+   - Transaction has not been committed yet.
+2. **Order** service publishes an **OrderCreatedEvent**.
+3. **Payment** service consumes the **OrderCreatedEvent**.
+4. **Payment** service publishes a **PaymentCompletedEvent**.
+5. **Order** service consumes the **PaymentCompletedEvent**.
+6. **Order** service tries to complete the order.
+   - Transaction has still not been committed yet.
+   - Order cannot be completed because it does not exist in the database.
 
 This is solved by using the **transactional outbox** pattern in the two microservices.
 We must ensure that an event is not published before the state has been saved to the database. 
@@ -81,6 +100,8 @@ When an order is created, the **order** service will save the order to the datab
 but it will also save an **OrderCreatedEvent** to the outbox table.
 Then a separate scheduled task will poll the outbox table and publish the event.
 This ensures the database transaction has been committed before the event is published.
+Essentially, an event can never be published before a specific database
+transaction has been committed.
 
 ### Database per service
 [microservices.io](https://microservices.io/patterns/data/database-per-service.html)
