@@ -51,8 +51,6 @@ public class PaymentService {
      * @param event {@link OrderCreatedEvent}.
      */
     public void processOrderCreated(OrderCreatedEvent event) {
-        logger.info("Received OrderCreatedEvent: {}", event);
-
         var random = new Random().nextBoolean();
         var status = PaymentStatus.COMPLETED;
         if (random) {

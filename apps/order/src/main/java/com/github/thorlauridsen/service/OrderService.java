@@ -50,7 +50,6 @@ public class OrderService {
      * @param event {@link PaymentCompletedEvent}.
      */
     public void processPaymentCompleted(PaymentCompletedEvent event) {
-        logger.info("Received PaymentCompletedEvent: {}", event);
         updateOrder(event.getOrderId(), OrderStatus.COMPLETED);
     }
 
@@ -61,7 +60,6 @@ public class OrderService {
      * @param event {@link PaymentFailedEvent}.
      */
     public void processPaymentFailed(PaymentFailedEvent event) {
-        logger.info("Received PaymentFailedEvent: {}", event);
         updateOrder(event.getOrderId(), OrderStatus.CANCELLED);
     }
 
@@ -73,6 +71,7 @@ public class OrderService {
      */
     public Order create(OrderCreate order) {
         logger.info("Creating order: {}", order);
+
         var saved = orderRepo.create(order);
         logger.info("Order created with id: {}", saved.id());
 
