@@ -31,6 +31,13 @@ them which will likely lead to new events being published from the same service.
 - **Scalability**: Consumers process events independently, allowing high scalability.
 - **Performance**: Events can be processed in parallel by multiple consumers.
 
+### Obstacles
+
+- **At-least-once delivery**: Events can be delivered more than once, so consumer methods must be idempotent.
+- **Ordering**: Event order is not guaranteed, so consumers must be able to handle events out of order.
+However, you can set up strict ordering such as FIFO but this may reduce performance.
+- **Schema evolution**: Events can change over time, so backwards compatibility must be ensured.
+
 ## Project structure
 
 This sample project consists of two independently runnable microservices named **order** and **payment**.
