@@ -1,28 +1,111 @@
-# Spring Boot Java sample project
+# Spring Boot Java Event-driven architecture
 
 This is a sample project for how you can set up a
 [multi-project Gradle build](https://docs.gradle.org/current/userguide/multi_project_builds.html)
-using [Spring Boot](https://github.com/spring-projects/spring-boot)
-and [Java](https://www.java.com).
+using [Spring Boot](https://github.com/spring-projects/spring-boot),
+[Java](https://www.java.com)
+and [Event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture).
 You can copy or fork this project to quickly set up a
-new project with the same multi-project Gradle structure.
+new project with the same event-driven architecture.
 
-This project consists of a runnable REST API using Spring Boot Web MVC.
+## Event-driven architecture
+
+[wikipedia.org](https://en.wikipedia.org/wiki/Event-driven_architecture) -
+[aws.amazon.com](https://aws.amazon.com/event-driven-architecture/) -
+[microservices.io](https://microservices.io/patterns/index.html)
+
+Instead of the traditional request/response paradigm we achieve with REST APIs,
+event-driven architecture allows us to use an asynchronous publish/consume pattern.
+This is a popular way to structure decoupled microservices.
+
+An event is when state has been updated, and it is relevant for other services.
+This could for example be **ORDER_CREATED** or **PAYMENT_FAILED**.
+Producers are responsible for publishing events and are unaware of which services 
+consume them or how they process the events. Producers will simply just publish the event and move on.
+Consumers are responsible for consuming events and can then process 
+them which will likely lead to new events being published from the same service.
+
+### Benefits
+
+- **Decoupling**: Producers and consumers do not need to communicate directly so there is no waiting for a response. 
+- **Scalability**: Consumers process events independently, allowing high scalability.
+- **Performance**: Events can be processed in parallel by multiple consumers.
+
+## Project structure
+
+This sample project consists of two independently runnable microservices named **order** and **payment**.
+Each service has a database and is responsible for its own domain.
+Both services will consume and publish relevant events.
+The order service uses 
+[Spring Boot Web MVC](https://github.com/spring-projects/spring-boot)
+to expose a REST API which has an endpoint for creating a new order.
+Sending a request to this endpoint will initiate the microservices.
+
+The **order** service will create an order and publish an **OrderCreatedEvent**.
+This event is then consumed by the **payment** service.
+For demonstration purposes, the **payment** service will then randomly
+decide whether the payment completed or failed.
+Below you can see a table presenting the two possible flows.
+
+| API (sync)         | Input events     | Service | Action           | Output events    |
+|--------------------|------------------|---------|------------------|------------------|
+| POST /order/create |                  | Order   | Create order     | OrderCreated     |
+|                    | OrderCreated     | Payment | Complete payment | PaymentCompleted |
+|                    | PaymentCompleted | Order   | Complete order   | OrderCompleted   |
+| -                  |                  |         |                  |                  |
+| POST /order/create |                  | Order   | Create order     | OrderCreated     |
+|                    | OrderCreated     | Payment | Fail payment     | PaymentFailed    |
+|                    | PaymentFailed    | Order   | Cancel order     | OrderCancelled   |
+
+## Patterns
+
+### Transactional outbox
+[microservices.io](https://microservices.io/patterns/data/transactional-outbox.html)
+
+The problem is that if we save to the database and publish an event at the same time,
+we cannot guarantee that the database transaction has been committed before the event is published
+and consumed somewhere else. In that case, it could for example cause an issue where 
+the **order** service consumes another event before the order has ever been saved to the database.
+This can lead to data inconsistency.
+
+This is solved by using the **transactional outbox** pattern in the two microservices.
+We must ensure that an event is not published before the state has been saved to the database. 
+When an order is created, the **order** service will save the order to the database,
+but it will also save an **OrderCreatedEvent** to the outbox table.
+Then a separate scheduled task will poll the outbox table and publish the event.
+This ensures the database transaction has been committed before the event is published.
+
+### Database per service
+[microservices.io](https://microservices.io/patterns/data/database-per-service.html)
+
+Each microservice has its own database. This is a common pattern in microservices
+
+## Setup
+
+LocalStack
 
 ## Usage
-Clone the project to your local machine, go to the root directory and use:
+
+Clone the project to your local machine, go to the root directory and use
+these two commands in separate terminals.
 ```
-./gradlew api:bootRun
+./gradlew order:bootRun
 ```
+```
+./gradlew payment:bootRun
+```
+You can also use IntelliJ IDEA to easily run the two services at once.
 
 ### Swagger Documentation
 Once the system is running, navigate to http://localhost:8080/
-to view the Swagger documentation.
+to view the Swagger documentation for the **order** service.
 
 ## Technology
+
+- [LocalStack](https://github.com/localstack/localstack) - For testing Amazon Web Services SQS and SNS locally
 - [JDK21](https://openjdk.org/projects/jdk/21/) - Latest JDK with long-term support
 - [Gradle](https://github.com/gradle/gradle) - Used for compilation, building, testing and dependency management
-- [Spring Boot (Web MVC)](https://github.com/spring-projects/spring-boot) - For creating REST APIs
+- [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot) - For creating REST APIs
 - [Springdoc](https://github.com/springdoc/springdoc-openapi) - Provides Swagger documentation for REST APIs
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/index.html) - Repository support for JPA
 - [H2database](https://github.com/h2database/h2database) - Provides an in-memory database for simple local testing
@@ -115,12 +198,22 @@ root
 │─ build.gradle.kts
 │─ settings.gradle.kts
 │─ apps
-│   └─ api
+│   └─ order
+│       └─ build.gradle.kts
+│   └─ payment
 │       └─ build.gradle.kts
 │─ modules
+│   ├─ consumer
+│   │   └─ build.gradle.kts
+│   ├─ event
+│   │   └─ build.gradle.kts
+│   ├─ jackson
+│   │   └─ build.gradle.kts
 │   ├─ model
 │   │   └─ build.gradle.kts
-│   └─ persistence
+│   ├─ outbox
+│   │   └─ build.gradle.kts
+│   └─ producer
 │       └─ build.gradle.kts
 ```
 
@@ -129,7 +222,7 @@ for which subproject. Each subproject should only use exactly the dependencies
 that they need.
 
 Subprojects located under [apps](apps) are runnable, so this means we can
-run the **api** project to spin up a Spring Boot REST API. We can add more
+run the **order** project to spin up a service. We can add more
 subprojects under [apps](apps) to create additional runnable microservices.
 
 Subprojects located under [modules](modules) are not independently runnable.
@@ -162,17 +255,32 @@ dependencies {
 This essentially allows us to define this structure:
 
 ```
-api  
+order  
+│─ consumer  
+│─ event  
+│─ jackson  
 │─ model  
-└─ persistence
+│─ outbox  
+└─ producer
 
-persistence  
-└─ model
+payment  
+│─ consumer  
+│─ event  
+│─ jackson  
+│─ model  
+│─ outbox  
+└─ producer
 
-model has no dependencies
+consumer  
+└─ event
+
+outbox  
+└─ event
+
+event, jackson, model and producer has no dependencies
 ```
 
 ## Meta
 
-This project has been inspired from the Kotlin project:
-[thorlauridsen/spring-boot-kotlin-sample](https://github.com/thorlauridsen/spring-boot-kotlin-sample).
+This project has been created with the sample code structure from:
+[thorlauridsen/spring-boot-java-sample](https://github.com/thorlauridsen/spring-boot-java-sample).
