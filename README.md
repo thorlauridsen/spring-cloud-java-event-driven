@@ -10,9 +10,9 @@ new project with the same event-driven architecture.
 
 ## Event-driven architecture
 
-[wikipedia.org](https://en.wikipedia.org/wiki/Event-driven_architecture) -
 [aws.amazon.com](https://aws.amazon.com/event-driven-architecture/) -
-[microservices.io](https://microservices.io/patterns/index.html)
+[microservices.io](https://microservices.io/patterns/index.html) - 
+[wikipedia.org](https://en.wikipedia.org/wiki/Event-driven_architecture)
 
 Instead of the traditional request/response paradigm we achieve with REST APIs,
 event-driven architecture allows us to use an asynchronous publish/consume pattern.
@@ -67,6 +67,7 @@ Below you can see a table presenting the two possible flows.
 ## Patterns
 
 ### Choreography-based saga
+[aws.amazon.com](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-choreography.html) - 
 [microservices.io](https://microservices.io/patterns/data/saga.html)
 
 The **order** and **payment** service are part of a **choreography-based saga**.
@@ -76,6 +77,7 @@ consume and process it. Services simply react to consumed events and publish new
 If we had a central orchestrator, it would be called an **orchestration-based saga**.
 
 ### Transactional outbox
+[aws.amazon.com](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html) -
 [microservices.io](https://microservices.io/patterns/data/transactional-outbox.html)
 
 A common issue with event-driven architecture is ensuring that state has been saved
