@@ -27,14 +27,29 @@ public abstract class BaseEvent {
         this.eventType = eventType;
     }
 
+    /**
+     * Get the UUID of the event.
+     *
+     * @return UUID of the event.
+     */
     public UUID getId() {
         return id;
     }
 
+    /**
+     * Get the time of the event.
+     *
+     * @return time of the event.
+     */
     public OffsetDateTime getTime() {
         return time;
     }
 
+    /**
+     * Get the type of the event.
+     *
+     * @return type of the event.
+     */
     public EventType getEventType() {
         return eventType;
     }
