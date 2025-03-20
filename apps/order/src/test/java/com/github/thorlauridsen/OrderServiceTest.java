@@ -1,4 +1,4 @@
-package com.github.thorlauridsen.producer;
+package com.github.thorlauridsen;
 
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
