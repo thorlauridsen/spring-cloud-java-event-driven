@@ -1,11 +1,9 @@
 [versions]
-aws-sdk = "2.31.2"
 aws-spring-cloud = "3.3.0"
 h2database = "2.3.232"
 jackson = "2.18.3"
 junitPlatformLauncher = "1.11.4"
 liquibase = "4.31.1"
-localstack = "0.2.23"
 springboot = "3.4.3"
 springDependencyPlugin = "1.1.6"
 springdoc = "2.8.5"
@@ -15,13 +13,6 @@ springdoc = "2.8.5"
 # Spring Cloud dependencies for AWS SQS and SNS
 aws-spring-cloud-sqs = { module = "io.awspring.cloud:spring-cloud-aws-starter-sqs", version.ref = "aws-spring-cloud" }
 aws-spring-cloud-sns = { module = "io.awspring.cloud:spring-cloud-aws-starter-sns", version.ref = "aws-spring-cloud" }
-
-# AWS SDK for SQS and SNS
-aws-sdk-sqs = { module = "software.amazon.awssdk:sqs", version.ref = "aws-sdk" }
-aws-sdk-sns = { module = "software.amazon.awssdk:sns", version.ref = "aws-sdk" }
-
-# LocalStack for running AWS services locally
-localstack-utils = { module = "cloud.localstack:localstack-utils", version.ref = "localstack" }
 
 # H2 for in-memory database
 h2database = { module = "com.h2database:h2", version.ref = "h2database" }

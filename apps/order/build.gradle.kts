@@ -21,15 +21,8 @@ dependencies {
 	implementation(local.aws.spring.cloud.sqs)
 	implementation(local.aws.spring.cloud.sns)
 
-	// AWS SDK dependencies for SQS and SNS
-	implementation(local.aws.sdk.sqs)
-	implementation(local.aws.sdk.sns)
-
 	// Jackson datatype JSR310 dependency for serializing Java 8 Date/Time API
 	implementation(local.jackson.datatype.jsr310)
-
-	// LocalStack dependencies for local AWS services
-	implementation(local.localstack.utils)
 
 	// H2 database dependency for in-memory database
 	implementation(local.h2database)
