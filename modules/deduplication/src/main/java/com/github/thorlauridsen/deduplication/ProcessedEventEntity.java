@@ -26,12 +26,4 @@ public class ProcessedEventEntity {
         this.eventId = eventId;
         this.processedAt = OffsetDateTime.now();
     }
-
-    public UUID getEventId() {
-        return eventId;
-    }
-
-    public OffsetDateTime getProcessedAt() {
-        return processedAt;
-    }
 }
