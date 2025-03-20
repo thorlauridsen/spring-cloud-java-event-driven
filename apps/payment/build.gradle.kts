@@ -6,6 +6,7 @@ plugins {
 dependencies {
 	// The payment subproject needs access to the following subprojects
 	implementation(projects.consumer)
+	implementation(projects.deduplication)
 	implementation(projects.event)
 	implementation(projects.jackson)
 	implementation(projects.model)

@@ -1,9 +1,13 @@
 package com.github.thorlauridsen.service;
 
+import com.github.thorlauridsen.deduplication.ProcessedEventEntity;
+import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
 import com.github.thorlauridsen.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.persistence.PaymentRepoFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -21,21 +25,27 @@ import java.util.Random;
 @Service
 public class PaymentService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final PaymentOutboxService outboxService;
     private final PaymentRepoFacade paymentRepo;
+    private final ProcessedEventRepo processedEventRepo;
 
     /**
      * Constructor for PaymentService.
      *
-     * @param outboxService {@link PaymentOutboxService} for preparing outbox events.
-     * @param paymentRepo   {@link PaymentRepoFacade} for interacting with the payment table.
+     * @param outboxService      {@link PaymentOutboxService} for preparing outbox events.
+     * @param paymentRepo        {@link PaymentRepoFacade} for interacting with the payment table.
+     * @param processedEventRepo {@link ProcessedEventRepo} for checking if an event has already been processed.
      */
     public PaymentService(
             PaymentOutboxService outboxService,
-            PaymentRepoFacade paymentRepo
+            PaymentRepoFacade paymentRepo,
+            ProcessedEventRepo processedEventRepo
     ) {
         this.outboxService = outboxService;
         this.paymentRepo = paymentRepo;
+        this.processedEventRepo = processedEventRepo;
     }
 
     /**
@@ -47,6 +57,10 @@ public class PaymentService {
      * @param event {@link OrderCreatedEvent}.
      */
     public void processOrderCreated(OrderCreatedEvent event) {
+        if (processedEventRepo.existsById(event.getId())) {
+            logger.warn("Event already processed with id: {}", event.getId());
+            return;
+        }
         var random = new Random().nextBoolean();
         var status = PaymentStatus.COMPLETED;
         if (random) {
@@ -57,7 +71,10 @@ public class PaymentService {
                 status,
                 event.getAmount()
         );
+        var processedEvent = new ProcessedEventEntity(event.getId());
+
         var saved = paymentRepo.create(payment);
+        processedEventRepo.save(processedEvent);
         outboxService.prepare(saved);
     }
 }
