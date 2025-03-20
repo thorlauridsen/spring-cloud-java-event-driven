@@ -29,7 +29,7 @@ public class OrderController implements IOrderController {
     /**
      * Method to create a new order.
      *
-     * @param dto Input DTO for creating a customer.
+     * @param dto Input DTO for creating an order.
      * @return {@link ResponseEntity} with {@link OrderDto}.
      */
     @Override
