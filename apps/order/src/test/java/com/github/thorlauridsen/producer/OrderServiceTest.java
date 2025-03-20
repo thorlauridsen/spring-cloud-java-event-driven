@@ -3,6 +3,7 @@ package com.github.thorlauridsen.producer;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.event.PaymentFailedEvent;
+import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.outbox.OutboxRepo;
 import com.github.thorlauridsen.persistence.OrderRepo;
@@ -37,38 +38,36 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrderPaymentCompleted() {
-        var order = new OrderCreate(
-                "Computer",
-                199.0
-        );
-        var created = orderService.create(order);
-
-        assertNotNull(created);
-        assertEquals("Computer", created.product());
-        assertEquals(199.0, created.amount());
-
-        assertEquals(1, orderRepo.count());
-        assertEquals(1, outboxRepo.count());
-
+    public void createOrder_PaymentCompleted() {
+        var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 created.id(),
                 created.amount()
         );
         orderService.processPaymentCompleted(event);
-
-        var optional = orderRepo.findById(created.id());
-        assertTrue(optional.isPresent());
-
-        var updated = optional.get().toModel();
-        assertEquals("Computer", updated.product());
-        assertEquals(199.0, updated.amount());
-        assertEquals(OrderStatus.COMPLETED, updated.status());
+        assertOrderStatus(created.id(), OrderStatus.COMPLETED);
     }
 
     @Test
-    public void createOrderPaymentFailed() {
+    public void createOrder_PaymentFailed() {
+        var created = createAndAssertOrder();
+        var event = new PaymentFailedEvent(
+                UUID.randomUUID(),
+                created.id()
+        );
+        orderService.processPaymentFailed(event);
+        assertOrderStatus(created.id(), OrderStatus.CANCELLED);
+    }
+
+    /**
+     * Create an order and assert that it was created successfully.
+     * This will assert that the order is present in the database.
+     * It will also assert that the outbox event is present in the database.
+     *
+     * @return {@link Order} created order.
+     */
+    private Order createAndAssertOrder() {
         var order = new OrderCreate(
                 "Computer",
                 199.0
@@ -82,18 +81,25 @@ public class OrderServiceTest {
         assertEquals(1, orderRepo.count());
         assertEquals(1, outboxRepo.count());
 
-        var event = new PaymentFailedEvent(
-                UUID.randomUUID(),
-                created.id()
-        );
-        orderService.processPaymentFailed(event);
+        var orderEntity = orderRepo.findById(created.id());
+        assertTrue(orderEntity.isPresent());
 
-        var optional = orderRepo.findById(created.id());
+        return created;
+    }
+
+    /**
+     * Assert that the order status is as expected.
+     *
+     * @param orderId        UUID of the order.
+     * @param expectedStatus {@link OrderStatus} expected status of the order.
+     */
+    private void assertOrderStatus(UUID orderId, OrderStatus expectedStatus) {
+        var optional = orderRepo.findById(orderId);
         assertTrue(optional.isPresent());
 
         var updated = optional.get().toModel();
         assertEquals("Computer", updated.product());
         assertEquals(199.0, updated.amount());
-        assertEquals(OrderStatus.CANCELLED, updated.status());
+        assertEquals(expectedStatus, updated.status());
     }
 }
