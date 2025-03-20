@@ -82,7 +82,34 @@ Each microservice has its own database. This is a common pattern in microservice
 
 ## Setup
 
-LocalStack
+For this project I have decided to create an independent SQS queue and SNS topic for each event.
+You can use 
+[LocalStack](https://github.com/localstack/localstack) 
+to run AWS services locally through 
+[Docker](https://www.docker.com/).
+If you wish to run the microservices in this project,
+you must first start LocalStack and create the queues and topics.
+
+Once you have set up **localstack** and **awslocal**, open a terminal and use:
+```
+localstack start -d
+```
+
+Then you can create the queues and topics with the following commands:
+```
+awslocal sqs create-queue --queue-name order-created-queue
+awslocal sns create-topic --name order-created-topic
+awslocal sqs get-queue-attributes --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-created-queue --attribute-name QueueArn
+awslocal sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:order-created-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:order-created-queue
+awslocal sqs create-queue --queue-name payment-completed-queue
+awslocal sns create-topic --name payment-completed-topic
+awslocal sqs get-queue-attributes --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/payment-completed-queue --attribute-name QueueArn
+awslocal sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:payment-completed-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:payment-completed-queue
+awslocal sqs create-queue --queue-name payment-failed-queue
+awslocal sns create-topic --name payment-failed-topic
+awslocal sqs get-queue-attributes --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/payment-failed-queue --attribute-name QueueArn
+awslocal sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:payment-failed-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:payment-failed-queue
+```
 
 ## Usage
 
@@ -102,11 +129,13 @@ to view the Swagger documentation for the **order** service.
 
 ## Technology
 
-- [LocalStack](https://github.com/localstack/localstack) - For testing Amazon Web Services SQS and SNS locally
 - [JDK21](https://openjdk.org/projects/jdk/21/) - Latest JDK with long-term support
 - [Gradle](https://github.com/gradle/gradle) - Used for compilation, building, testing and dependency management
-- [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot) - For creating REST APIs
+- [Spring Cloud AWS](https://github.com/awspring/spring-cloud-aws) - For interacting with Amazon Web Services SQS and SNS
+- [LocalStack](https://github.com/localstack/localstack) - For testing Amazon Web Services SQS and SNS locally
+- [Docker](https://www.docker.com/) - Used to run LocalStack in a Docker container
 - [Springdoc](https://github.com/springdoc/springdoc-openapi) - Provides Swagger documentation for REST APIs
+- [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot) - For creating REST APIs
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/index.html) - Repository support for JPA
 - [H2database](https://github.com/h2database/h2database) - Provides an in-memory database for simple local testing
 - [Liquibase](https://github.com/liquibase/liquibase) - Used to manage database schema changelogs
