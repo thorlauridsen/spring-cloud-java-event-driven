@@ -10,18 +10,25 @@ import java.util.UUID;
  */
 public class PaymentCompletedEvent extends BaseEvent {
 
+    private final UUID paymentId;
     private final UUID orderId;
     private final double amount;
 
     @JsonCreator
     public PaymentCompletedEvent(
             @JsonProperty("id") UUID id,
+            @JsonProperty("paymentId") UUID paymentId,
             @JsonProperty("orderId") UUID orderId,
             @JsonProperty("amount") double amount
     ) {
         super(id, EventType.PAYMENT_COMPLETED);
+        this.paymentId = paymentId;
         this.orderId = orderId;
         this.amount = amount;
+    }
+
+    public UUID getPaymentId() {
+        return paymentId;
     }
 
     public UUID getOrderId() {

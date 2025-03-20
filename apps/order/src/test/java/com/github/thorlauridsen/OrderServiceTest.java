@@ -44,6 +44,7 @@ public class OrderServiceTest {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
+                UUID.randomUUID(),
                 created.id(),
                 created.amount()
         );
@@ -55,6 +56,7 @@ public class OrderServiceTest {
     public void createOrder_PaymentFailed() {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
+                UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );

@@ -53,7 +53,7 @@ public class PaymentService {
             status = PaymentStatus.FAILED;
         }
         var payment = new PaymentCreate(
-                event.getId(),
+                event.getOrderId(),
                 status,
                 event.getAmount()
         );
