@@ -50,7 +50,6 @@ public abstract class BaseOutboxPoller {
         var events = outboxRepo.findAllByProcessedFalse();
 
         if (events.isEmpty()) {
-            logger.info("No unprocessed events found...");
             return;
         }
         logger.info("Found {} unprocessed events. Processing...", events.size());
