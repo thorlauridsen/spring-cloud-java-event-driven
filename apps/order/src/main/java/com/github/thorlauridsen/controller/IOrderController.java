@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import static com.github.thorlauridsen.controller.BaseEndpoint.ORDER_BASE_ENDPOINT;
+
 /**
  * Order controller interface.
  * This interface defines the endpoints for the order controller.
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * The purpose with this interface is to separate the controller definition from the implementation.
  */
 @Tag(name = "Order Controller", description = "API for managing orders")
-@RequestMapping("/order")
+@RequestMapping(ORDER_BASE_ENDPOINT)
 public interface IOrderController {
 
     /**
