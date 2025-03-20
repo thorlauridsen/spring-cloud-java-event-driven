@@ -36,6 +36,21 @@ public record OrderDto(
 ) {
 
     /**
+     * Convert this {@link OrderDto} to an {@link Order} model.
+     *
+     * @return {@link Order} model.
+     */
+    public Order toModel() {
+        return new Order(
+                id,
+                time,
+                status,
+                product,
+                amount
+        );
+    }
+
+    /**
      * Static method to convert an {@link Order} model to an {@link OrderDto}.
      *
      * @param order {@link Order} to convert.
