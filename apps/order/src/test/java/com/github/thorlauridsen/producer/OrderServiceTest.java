@@ -35,6 +35,8 @@ public class OrderServiceTest {
     public void setup() {
         orderRepo.deleteAll();
         outboxRepo.deleteAll();
+        assertEquals(0, orderRepo.count());
+        assertEquals(0, outboxRepo.count());
     }
 
     @Test
