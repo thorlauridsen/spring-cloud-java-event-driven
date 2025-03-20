@@ -31,12 +31,4 @@ public class PaymentCompletedEvent extends BaseEvent {
     public double getAmount() {
         return amount;
     }
-
-    @Override
-    public String toString() {
-        return "PaymentCompletedEvent{" +
-                "orderId=" + orderId +
-                ", amount=" + amount +
-                '}';
-    }
 }

@@ -24,11 +24,4 @@ public class PaymentFailedEvent extends BaseEvent {
     public UUID getOrderId() {
         return orderId;
     }
-
-    @Override
-    public String toString() {
-        return "PaymentFailedEvent{" +
-                "orderId=" + orderId +
-                '}';
-    }
 }

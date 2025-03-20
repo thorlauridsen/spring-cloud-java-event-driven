@@ -31,12 +31,4 @@ public class OrderCreatedEvent extends BaseEvent {
     public double getAmount() {
         return amount;
     }
-
-    @Override
-    public String toString() {
-        return "OrderCreatedEvent{" +
-                "product='" + product + '\'' +
-                ", amount=" + amount +
-                '}';
-    }
 }
