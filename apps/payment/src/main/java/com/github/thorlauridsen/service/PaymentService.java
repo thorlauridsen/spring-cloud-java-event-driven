@@ -4,8 +4,6 @@ import com.github.thorlauridsen.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.persistence.PaymentRepoFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -22,8 +20,6 @@ import java.util.Random;
  */
 @Service
 public class PaymentService {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PaymentOutboxService outboxService;
     private final PaymentRepoFacade paymentRepo;
