@@ -5,11 +5,10 @@ import com.github.thorlauridsen.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.persistence.PaymentRepoFacade;
+import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Random;
 
 /**
  * Payment service class.
@@ -34,8 +33,8 @@ public class PaymentService {
      * Constructor for PaymentService.
      *
      * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
-     * @param outboxService      {@link PaymentOutboxService} for preparing outbox events.
-     * @param paymentRepo        {@link PaymentRepoFacade} for interacting with the payment table.
+     * @param outboxService        {@link PaymentOutboxService} for preparing outbox events.
+     * @param paymentRepo          {@link PaymentRepoFacade} for interacting with the payment table.
      */
     public PaymentService(
             DeduplicationService deduplicationService,
@@ -52,6 +51,11 @@ public class PaymentService {
      * This method will create a new payment based on the event.
      * The payment will be saved to the database and an outbox event will be prepared.
      * For demonstration purposes, the payment status will be randomly set to either COMPLETED or FAILED.
+     * <p>
+     * This method is not idempotent as the payment status is randomly set.
+     * This method will check if the event has already been processed by checking the deduplication service.
+     * If the event has already been processed, it will log a warning and return.
+     * If the event has not been processed, it will continue and record the event as processed.
      *
      * @param event {@link OrderCreatedEvent}.
      */

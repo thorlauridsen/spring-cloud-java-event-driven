@@ -105,6 +105,28 @@ This ensures the database transaction has been committed before the event is pub
 Essentially, an event can never be published before a specific database
 transaction has been committed.
 
+### Idempotency and deduplication
+
+Considering that many messaging services guarantee **at-least-once delivery**, 
+we must ensure that our services can gracefully handle duplicate events.
+Ideally, our methods should always be idempotent which means that calling
+a method multiple times with the same input always produces the same output.
+If your methods are idempotent, then you can safely process the same event multiple times.
+
+Sometimes it is not possible to make a method idempotent.
+In that case, we can for example use some type of deduplication mechanism to
+gracefully handle duplicate events. This project showcases an example of how
+you can implement deduplication. 
+
+In the **deduplication** subproject, you can find 
+[ProcessedEventRepo](modules/deduplication/src/main/java/com/github/thorlauridsen/deduplication/ProcessedEventRepo.java) 
+and [ProcessedEventEntity](modules/deduplication/src/main/java/com/github/thorlauridsen/deduplication/ProcessedEventEntity.java).
+These are used to store processed events in the database.
+When a service consumes an event, it will first check if the event has already been processed.
+If the event has already been processed, then the service will not process the event again.
+If the event has not been processed, then the service will process the event and mark 
+the event as processed.
+
 ### Database per service
 [microservices.io](https://microservices.io/patterns/data/database-per-service.html)
 

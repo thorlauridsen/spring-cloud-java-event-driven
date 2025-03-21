@@ -51,6 +51,11 @@ public class OrderService {
     /**
      * Process a payment completed event.
      * If payment is completed, the order status will be set to COMPLETED.
+     * <p>
+     * This method will also check if the event has already been processed by checking the deduplication service.
+     * If the event has already been processed, it will log a warning and return.
+     * If the event has not been processed, it will continue and record the event as processed.
+     * This might be redundant as this method is already idempotent but this is just for showcasing.
      *
      * @param event {@link PaymentCompletedEvent}.
      */
@@ -66,6 +71,11 @@ public class OrderService {
     /**
      * Process a payment failed event.
      * If payment is failed, the order status will be set to CANCELLED.
+     * <p>
+     * This method will also check if the event has already been processed by checking the deduplication service.
+     * If the event has already been processed, it will log a warning and return.
+     * If the event has not been processed, it will continue and record the event as processed.
+     * This might be redundant as this method is already idempotent but this is just for showcasing.
      *
      * @param event {@link PaymentFailedEvent}.
      */
