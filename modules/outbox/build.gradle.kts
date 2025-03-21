@@ -11,7 +11,6 @@ dependencies {
 	implementation(projects.event)
 
 	// Spring Boot dependencies
-	implementation(local.springboot.starter)
 	implementation(local.springboot.starter.jpa)
 
 	// Jackson datatype JSR310 dependency for serializing Java 8 Date/Time API
