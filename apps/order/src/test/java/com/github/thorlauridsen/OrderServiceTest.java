@@ -52,7 +52,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_PaymentCompleted() {
+    public void createOrder_paymentCompleted() {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -65,7 +65,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_PaymentFailed() {
+    public void createOrder_paymentFailed() {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),

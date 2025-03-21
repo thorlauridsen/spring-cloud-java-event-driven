@@ -66,7 +66,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void createOrder_PaymentCompleted() throws Exception {
+    public void createOrder_paymentCompleted() throws Exception {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -79,7 +79,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void createOrder_PaymentFailed() throws Exception {
+    public void createOrder_paymentFailed() throws Exception {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
