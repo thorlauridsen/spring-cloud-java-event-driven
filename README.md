@@ -106,6 +106,7 @@ Essentially, an event can never be published before a specific database
 transaction has been committed.
 
 ### Idempotency and deduplication
+[microservices.io](https://microservices.io/patterns/communication-style/idempotent-consumer.html)
 
 Considering that many messaging services guarantee **at-least-once delivery**, 
 we must ensure that our services can gracefully handle duplicate events.
@@ -128,6 +129,7 @@ If the event has not been processed, then the service will process the event and
 the event as processed.
 
 ### Database per service
+[aws.amazon.com](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/database-per-service.html) -
 [microservices.io](https://microservices.io/patterns/data/database-per-service.html)
 
 Each service has its own database which is a common pattern in event-driven architecture.
