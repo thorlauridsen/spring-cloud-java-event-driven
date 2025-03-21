@@ -26,10 +26,10 @@ dependencies {
 	implementation(local.jackson.datatype.jsr310)
 
 	// H2 database dependency for in-memory database
-	implementation(local.h2database)
+	runtimeOnly(local.h2database)
 
 	// Liquibase core dependency for database migrations
-	implementation(local.liquibase.core)
+	runtimeOnly(local.liquibase.core)
 
 	// Springdoc OpenAPI for providing Swagger documentation
 	implementation(local.springdoc.openapi.starter.webmvc)
