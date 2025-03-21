@@ -1,7 +1,6 @@
 package com.github.thorlauridsen.service;
 
-import com.github.thorlauridsen.deduplication.ProcessedEventEntity;
-import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
+import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.PaymentCreate;
@@ -27,25 +26,25 @@ public class PaymentService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final DeduplicationService deduplicationService;
     private final PaymentOutboxService outboxService;
     private final PaymentRepoFacade paymentRepo;
-    private final ProcessedEventRepo processedEventRepo;
 
     /**
      * Constructor for PaymentService.
      *
+     * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
      * @param outboxService      {@link PaymentOutboxService} for preparing outbox events.
      * @param paymentRepo        {@link PaymentRepoFacade} for interacting with the payment table.
-     * @param processedEventRepo {@link ProcessedEventRepo} for checking if an event has already been processed.
      */
     public PaymentService(
+            DeduplicationService deduplicationService,
             PaymentOutboxService outboxService,
-            PaymentRepoFacade paymentRepo,
-            ProcessedEventRepo processedEventRepo
+            PaymentRepoFacade paymentRepo
     ) {
+        this.deduplicationService = deduplicationService;
         this.outboxService = outboxService;
         this.paymentRepo = paymentRepo;
-        this.processedEventRepo = processedEventRepo;
     }
 
     /**
@@ -57,7 +56,7 @@ public class PaymentService {
      * @param event {@link OrderCreatedEvent}.
      */
     public void processOrderCreated(OrderCreatedEvent event) {
-        if (processedEventRepo.existsById(event.getId())) {
+        if (deduplicationService.isDuplicate(event.getId())) {
             logger.warn("Event already processed with id: {}", event.getId());
             return;
         }
@@ -71,10 +70,8 @@ public class PaymentService {
                 status,
                 event.getAmount()
         );
-        var processedEvent = new ProcessedEventEntity(event.getId());
-
         var saved = paymentRepo.create(payment);
-        processedEventRepo.save(processedEvent);
+        deduplicationService.recordEvent(event.getId());
         outboxService.prepare(saved);
     }
 }
