@@ -1,8 +1,8 @@
-# Spring Boot Java Event-driven architecture
+# Spring Cloud Java Event-driven architecture
 
 This is a sample project for how you can set up a
 [multi-project Gradle build](https://docs.gradle.org/current/userguide/multi_project_builds.html)
-using [Spring Boot](https://github.com/spring-projects/spring-boot),
+using [Spring Cloud AWS](https://github.com/awspring/spring-cloud-aws),
 [Java](https://www.java.com)
 and [Event-driven architecture](https://en.wikipedia.org/wiki/Event-driven_architecture).
 You can copy or fork this project to quickly set up a
@@ -10,9 +10,9 @@ new project with the same event-driven architecture.
 
 ## Event-driven architecture
 
-[wikipedia.org](https://en.wikipedia.org/wiki/Event-driven_architecture) -
 [aws.amazon.com](https://aws.amazon.com/event-driven-architecture/) -
-[microservices.io](https://microservices.io/patterns/index.html)
+[microservices.io](https://microservices.io/patterns/index.html) - 
+[wikipedia.org](https://en.wikipedia.org/wiki/Event-driven_architecture)
 
 Instead of the traditional request/response paradigm we achieve with REST APIs,
 event-driven architecture allows us to use an asynchronous publish/consume pattern.
@@ -36,7 +36,7 @@ them which will likely lead to new events being published from the same service.
 - **At-least-once delivery**: Events can be delivered more than once, so consumer methods must be idempotent.
 - **Ordering**: Event order is not guaranteed, so consumers must be able to handle events out of order.
 However, you can set up strict ordering such as FIFO but this may reduce performance.
-- **Schema evolution**: Events can change over time, so backwards compatibility must be ensured.
+- **Schema evolution**: Events can change over time, so backward compatibility must be ensured.
 
 ## Project structure
 
@@ -66,14 +66,35 @@ Below you can see a table presenting the two possible flows.
 
 ## Patterns
 
+### Choreography-based saga
+[aws.amazon.com](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/saga-choreography.html) - 
+[microservices.io](https://microservices.io/patterns/data/saga.html)
+
+The **order** and **payment** service are part of a **choreography-based saga**.
+Each service is responsible for its own domain, and they communicate through events.
+Once an event is published, the producer does not know how another service might 
+consume and process it. Services simply react to consumed events and publish new events.
+If we had a central orchestrator, it would be called an **orchestration-based saga**.
+
 ### Transactional outbox
+[aws.amazon.com](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html) -
 [microservices.io](https://microservices.io/patterns/data/transactional-outbox.html)
 
-The problem is that if we save to the database and publish an event at the same time,
-we cannot guarantee that the database transaction has been committed before the event is published
-and consumed somewhere else. In that case, it could for example cause an issue where 
-the **order** service consumes another event before the order has ever been saved to the database.
-This can lead to data inconsistency.
+A common issue with event-driven architecture is ensuring that state has been saved
+to the database before an event is published. If we try to save an entity to the database
+and publish an event at the same time, it can lead to issues as the database transaction
+may not have been committed before the event is published.
+
+Example issue:
+1. **Order** service tries to save an order to the database.
+   - Transaction has not been committed yet.
+2. **Order** service publishes an **OrderCreatedEvent**.
+3. **Payment** service consumes the **OrderCreatedEvent**.
+4. **Payment** service publishes a **PaymentCompletedEvent**.
+5. **Order** service consumes the **PaymentCompletedEvent**.
+6. **Order** service tries to complete the order.
+   - Transaction has still not been committed yet.
+   - Order cannot be completed because it does not exist in the database.
 
 This is solved by using the **transactional outbox** pattern in the two microservices.
 We must ensure that an event is not published before the state has been saved to the database. 
@@ -81,6 +102,8 @@ When an order is created, the **order** service will save the order to the datab
 but it will also save an **OrderCreatedEvent** to the outbox table.
 Then a separate scheduled task will poll the outbox table and publish the event.
 This ensures the database transaction has been committed before the event is published.
+Essentially, an event can never be published before a specific database
+transaction has been committed.
 
 ### Database per service
 [microservices.io](https://microservices.io/patterns/data/database-per-service.html)

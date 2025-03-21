@@ -58,6 +58,7 @@ public class OrderControllerTest extends BaseMockMvc {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
+                UUID.randomUUID(),
                 created.id(),
                 created.amount()
         );
@@ -69,6 +70,7 @@ public class OrderControllerTest extends BaseMockMvc {
     public void createOrder_PaymentFailed() throws Exception {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
+                UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );

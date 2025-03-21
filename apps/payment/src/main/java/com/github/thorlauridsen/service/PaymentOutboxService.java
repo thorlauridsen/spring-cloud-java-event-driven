@@ -6,6 +6,8 @@ import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.outbox.OutboxRepoFacade;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * Service class for the payment outbox.
  * This class is responsible for preparing events to be saved to the outbox table.
@@ -37,6 +39,7 @@ public class PaymentOutboxService {
         switch (payment.status()) {
             case COMPLETED -> {
                 var event = new PaymentCompletedEvent(
+                        UUID.randomUUID(),
                         payment.id(),
                         payment.orderId(),
                         payment.amount()
@@ -45,6 +48,7 @@ public class PaymentOutboxService {
             }
             case FAILED -> {
                 var event = new PaymentFailedEvent(
+                        UUID.randomUUID(),
                         payment.id(),
                         payment.orderId()
                 );

@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * Service class for the order outbox.
  * This class is responsible for preparing events to be saved to the outbox table.
@@ -41,6 +43,7 @@ public class OrderOutboxService {
             return;
         }
         var event = new OrderCreatedEvent(
+                UUID.randomUUID(),
                 order.id(),
                 order.product(),
                 order.amount()
