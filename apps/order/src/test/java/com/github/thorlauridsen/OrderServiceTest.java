@@ -1,5 +1,6 @@
 package com.github.thorlauridsen;
 
+import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.event.PaymentFailedEvent;
@@ -35,6 +36,9 @@ public class OrderServiceTest {
     @Autowired
     private OutboxRepo outboxRepo;
 
+    @Autowired
+    private ProcessedEventRepo processedEventRepo;
+
     /**
      * Mocked SnsTemplate for testing.
      * Spring Cloud AWS SQS and SNS is disabled in the test profile.
@@ -47,12 +51,14 @@ public class OrderServiceTest {
     public void setup() {
         orderRepo.deleteAll();
         outboxRepo.deleteAll();
+        processedEventRepo.deleteAll();
         assertEquals(0, orderRepo.count());
         assertEquals(0, outboxRepo.count());
+        assertEquals(0, processedEventRepo.count());
     }
 
     @Test
-    public void createOrder_PaymentCompleted() {
+    public void createOrder_paymentCompleted() {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -65,13 +71,40 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_PaymentFailed() {
+    public void createOrder_paymentFailed() {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );
+        orderService.processPaymentFailed(event);
+        assertOrderStatus(created.id(), OrderStatus.CANCELLED);
+    }
+
+    @Test
+    public void createOrder_paymentCompleted_deduplicationWorks() {
+        var created = createAndAssertOrder();
+        var event = new PaymentCompletedEvent(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                created.id(),
+                created.amount()
+        );
+        orderService.processPaymentCompleted(event);
+        orderService.processPaymentCompleted(event);
+        assertOrderStatus(created.id(), OrderStatus.COMPLETED);
+    }
+
+    @Test
+    public void createOrder_paymentFailed_deduplicationWorks() {
+        var created = createAndAssertOrder();
+        var event = new PaymentFailedEvent(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                created.id()
+        );
+        orderService.processPaymentFailed(event);
         orderService.processPaymentFailed(event);
         assertOrderStatus(created.id(), OrderStatus.CANCELLED);
     }
@@ -105,6 +138,7 @@ public class OrderServiceTest {
 
     /**
      * Assert that the order status is as expected.
+     * This will also assert that the processed event is present in the database.
      *
      * @param orderId        UUID of the order.
      * @param expectedStatus {@link OrderStatus} expected status of the order.
@@ -117,5 +151,7 @@ public class OrderServiceTest {
         assertEquals("Computer", updated.product());
         assertEquals(199.0, updated.amount());
         assertEquals(expectedStatus, updated.status());
+
+        assertEquals(1, processedEventRepo.count());
     }
 }
