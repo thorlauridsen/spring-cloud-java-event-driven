@@ -130,7 +130,11 @@ the event as processed.
 ### Database per service
 [microservices.io](https://microservices.io/patterns/data/database-per-service.html)
 
-Each microservice has its own database. This is a common pattern in microservices
+Each service has its own database which is a common pattern in event-driven architecture.
+This allows each service to have its own database schema related to its own domain.
+A benefit here is that multiple services do not need to rely and depend on the same 
+shared database schema. This allows for more scalability and independence.
+A specific service could even use a completely different database technology than another service.
 
 ## Setup
 
@@ -286,6 +290,8 @@ root
 │─ modules
 │   ├─ consumer
 │   │   └─ build.gradle.kts
+│   ├─ deduplication
+│   │   └─ build.gradle.kts
 │   ├─ event
 │   │   └─ build.gradle.kts
 │   ├─ jackson
@@ -353,6 +359,9 @@ payment
 └─ producer
 
 consumer  
+└─ event
+
+deduplication  
 └─ event
 
 outbox  
