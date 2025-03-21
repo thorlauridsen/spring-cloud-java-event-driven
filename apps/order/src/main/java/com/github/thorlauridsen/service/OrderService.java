@@ -60,7 +60,7 @@ public class OrderService {
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.COMPLETED);
-        deduplicationService.recordEvent(event.getId());
+        deduplicationService.record(event.getId());
     }
 
     /**
@@ -75,7 +75,7 @@ public class OrderService {
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.CANCELLED);
-        deduplicationService.recordEvent(event.getId());
+        deduplicationService.record(event.getId());
     }
 
     /**

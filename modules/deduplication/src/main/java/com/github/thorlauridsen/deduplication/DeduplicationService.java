@@ -36,7 +36,7 @@ public class DeduplicationService {
      *
      * @param eventId UUID of the event to record.
      */
-    public void recordEvent(UUID eventId) {
+    public void record(UUID eventId) {
         var processedEvent = new ProcessedEventEntity(eventId);
         processedEventRepo.save(processedEvent);
     }
