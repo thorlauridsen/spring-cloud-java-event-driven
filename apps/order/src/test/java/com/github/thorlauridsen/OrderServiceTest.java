@@ -8,18 +8,22 @@ import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.outbox.OutboxRepo;
 import com.github.thorlauridsen.persistence.OrderRepo;
 import com.github.thorlauridsen.service.OrderService;
+import io.awspring.cloud.sns.core.SnsTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class OrderServiceTest {
 
     @Autowired
@@ -30,6 +34,14 @@ public class OrderServiceTest {
 
     @Autowired
     private OutboxRepo outboxRepo;
+
+    /**
+     * Mocked SnsTemplate for testing.
+     * Spring Cloud AWS SQS and SNS is disabled in the test profile.
+     * So we need to mock this to ensure the producers still get a bean.
+     */
+    @MockitoBean
+    private SnsTemplate snsTemplate;
 
     @BeforeEach
     public void setup() {

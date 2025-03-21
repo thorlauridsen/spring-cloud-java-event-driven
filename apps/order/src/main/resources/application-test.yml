@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    aws:
+      sqs:
+        enabled: false
+      sns:
+        enabled: false

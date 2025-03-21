@@ -1,16 +1,16 @@
 package com.github.thorlauridsen.service;
 
+import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.persistence.OrderRepoFacade;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Order service class.
@@ -26,21 +26,26 @@ import java.util.UUID;
 public class OrderService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final OrderRepoFacade orderRepo;
+
+    private final DeduplicationService deduplicationService;
     private final OrderOutboxService outboxService;
+    private final OrderRepoFacade orderRepo;
 
     /**
      * Constructor for OrderService.
      *
-     * @param orderRepo     {@link OrderRepoFacade} for interacting with the order repository.
-     * @param outboxService {@link OrderOutboxService} for preparing outbox events.
+     * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
+     * @param orderRepo            {@link OrderRepoFacade} for interacting with the order repository.
+     * @param outboxService        {@link OrderOutboxService} for preparing outbox events.
      */
     public OrderService(
-            OrderRepoFacade orderRepo,
-            OrderOutboxService outboxService
+            DeduplicationService deduplicationService,
+            OrderOutboxService outboxService,
+            OrderRepoFacade orderRepo
     ) {
-        this.orderRepo = orderRepo;
+        this.deduplicationService = deduplicationService;
         this.outboxService = outboxService;
+        this.orderRepo = orderRepo;
     }
 
     /**
@@ -50,7 +55,12 @@ public class OrderService {
      * @param event {@link PaymentCompletedEvent}.
      */
     public void processPaymentCompleted(PaymentCompletedEvent event) {
+        if (deduplicationService.isDuplicate(event.getId())) {
+            logger.warn("Event already processed with id: {}", event.getId());
+            return;
+        }
         updateOrder(event.getOrderId(), OrderStatus.COMPLETED);
+        deduplicationService.record(event.getId());
     }
 
     /**
@@ -60,7 +70,12 @@ public class OrderService {
      * @param event {@link PaymentFailedEvent}.
      */
     public void processPaymentFailed(PaymentFailedEvent event) {
+        if (deduplicationService.isDuplicate(event.getId())) {
+            logger.warn("Event already processed with id: {}", event.getId());
+            return;
+        }
         updateOrder(event.getOrderId(), OrderStatus.CANCELLED);
+        deduplicationService.record(event.getId());
     }
 
     /**
