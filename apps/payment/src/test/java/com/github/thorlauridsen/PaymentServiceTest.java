@@ -5,16 +5,20 @@ import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.outbox.OutboxRepo;
 import com.github.thorlauridsen.persistence.PaymentRepo;
 import com.github.thorlauridsen.service.PaymentService;
+import io.awspring.cloud.sns.core.SnsTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class PaymentServiceTest {
 
     @Autowired
@@ -28,6 +32,14 @@ public class PaymentServiceTest {
 
     @Autowired
     private ProcessedEventRepo processedEventRepo;
+
+    /**
+     * Mocked SnsTemplate for testing.
+     * Spring Cloud AWS SQS and SNS is disabled in the test profile.
+     * So we need to mock this to ensure the producers still get a bean.
+     */
+    @MockitoBean
+    private SnsTemplate snsTemplate;
 
     @BeforeEach
     public void setup() {
