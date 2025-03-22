@@ -110,7 +110,7 @@ public class OrderService {
      * @param id     UUID of the order.
      * @param status {@link OrderStatus} to update the order with.
      */
-    public void updateOrder(
+    private void updateOrder(
             UUID id,
             OrderStatus status
     ) {
