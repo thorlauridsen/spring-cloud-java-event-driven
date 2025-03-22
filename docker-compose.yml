@@ -1,4 +1,30 @@
 services:
+  order-postgres:
+    image: postgres:17
+    container_name: order-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order-db
+    ports:
+      - "5434:5432"
+    networks:
+      - localstack_network
+    restart: unless-stopped
+
+  payment-postgres:
+    image: postgres:17
+    container_name: payment-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: payment-db
+    ports:
+      - "5432:5432"
+    networks:
+      - localstack_network
+    restart: unless-stopped
+
   order:
     build:
       context: .
@@ -8,7 +34,11 @@ services:
     environment:
       SPRING_CLOUD_AWS_SNS_ENDPOINT: http://localstack:4566
       SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-postgres:5432/order-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
+      - order-postgres
       - localstack
     networks:
       - localstack_network
@@ -25,7 +55,11 @@ services:
     environment:
       SPRING_CLOUD_AWS_SNS_ENDPOINT: http://localstack:4566
       SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payment-postgres:5432/payment-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
+      - payment-postgres
       - localstack
     networks:
       - localstack_network
@@ -43,7 +77,6 @@ services:
       - PERSISTENCE=/var/lib/localstack/data
     volumes:
       - "./docker/localstack/init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh"
-      - "localstack-data:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
     command: chmod +x /etc/localstack/init/ready.d/init-localstack.sh
     networks:
@@ -52,6 +85,3 @@ services:
 networks:
   localstack_network:
     driver: bridge
-
-volumes:
-  localstack-data:

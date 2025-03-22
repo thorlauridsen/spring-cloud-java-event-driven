@@ -45,7 +45,7 @@ public class PaymentFailedConsumer extends EventConsumer<PaymentFailedEvent> {
      * @param json The JSON message from the SQS queue as a String.
      */
     @Override
-    @SqsListener("arn:aws:sqs:us-east-1:000000000000:payment-failed-queue")
+    @SqsListener("payment-failed-queue")
     public void listen(String json) {
         super.listen(json);
     }
@@ -61,4 +61,3 @@ public class PaymentFailedConsumer extends EventConsumer<PaymentFailedEvent> {
         return PaymentFailedEvent.class;
     }
 }
-

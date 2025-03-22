@@ -45,7 +45,7 @@ public class PaymentCompletedConsumer extends EventConsumer<PaymentCompletedEven
      * @param json The JSON message from the SQS queue as a String.
      */
     @Override
-    @SqsListener("arn:aws:sqs:us-east-1:000000000000:payment-completed-queue")
+    @SqsListener("payment-completed-queue")
     public void listen(String json) {
         super.listen(json);
     }
