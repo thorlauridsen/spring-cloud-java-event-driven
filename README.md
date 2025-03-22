@@ -27,8 +27,11 @@ them which will likely lead to new events being published from the same service.
 
 ### Benefits
 
-- **Decoupling**: Producers and consumers do not need to communicate directly so there is no waiting for a response. 
-- **Scalability**: Consumers process events independently, allowing high scalability.
+- **Decoupling**: Producers and consumers do not need to communicate directly so there is no waiting for a response.
+Services can evolve independently without the risk of introducing system-wide issues.
+- **Scalability**: Microservices are loosely coupled so it is easier to scale without affecting other parts of the system.
+- **Flexibility**: It is easier to add new functionality without affecting other services.
+You can even use different technologies for separate microservices.
 - **Performance**: Events can be processed in parallel by multiple consumers.
 
 ### Obstacles
