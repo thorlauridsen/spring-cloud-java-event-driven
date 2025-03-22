@@ -1,5 +1,4 @@
 #!/bin/bash
-
 awslocal sqs create-queue --queue-name order-created-queue
 awslocal sns create-topic --name order-created-topic
 awslocal sqs get-queue-attributes --queue-url http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-created-queue --attribute-name QueueArn
