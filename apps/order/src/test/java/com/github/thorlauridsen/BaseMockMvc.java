@@ -37,4 +37,18 @@ public class BaseMockMvc {
                         .content(jsonBody)
         ).andReturn().getResponse();
     }
+
+    /**
+     * Mock an HTTP GET request.
+     *
+     * @param getUrl The URL to send an HTTP GET request to.
+     * @return {@link MockHttpServletResponse} response.
+     */
+    public MockHttpServletResponse mockGet(String getUrl) throws Exception {
+        return mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get(getUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+    }
 }

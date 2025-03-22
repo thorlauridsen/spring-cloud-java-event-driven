@@ -1,5 +1,6 @@
 package com.github.thorlauridsen.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,6 +24,6 @@ import java.time.OffsetDateTime;
 )
 public record ErrorDto(
         @JsonProperty("description") String description,
-        @JsonProperty("time") OffsetDateTime time
+        @JsonProperty("time") @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssX") OffsetDateTime time
 ) {
 }

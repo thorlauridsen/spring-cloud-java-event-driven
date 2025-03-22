@@ -66,8 +66,15 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
+    public void getOrder_noOrderExists() throws Exception {
+        var orderId = UUID.randomUUID();
+        var response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
     public void createOrder_paymentCompleted() throws Exception {
-        var created = createAndAssertOrder();
+        var created = postRequestAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -75,29 +82,30 @@ public class OrderControllerTest extends BaseMockMvc {
                 created.amount()
         );
         orderService.processPaymentCompleted(event);
-        assertOrderStatus(created.id(), OrderStatus.COMPLETED);
+        getRequestAndAssertOrder(created.id(), OrderStatus.COMPLETED);
     }
 
     @Test
     public void createOrder_paymentFailed() throws Exception {
-        var created = createAndAssertOrder();
+        var created = postRequestAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );
         orderService.processPaymentFailed(event);
-        assertOrderStatus(created.id(), OrderStatus.CANCELLED);
+        getRequestAndAssertOrder(created.id(), OrderStatus.CANCELLED);
     }
 
     /**
-     * Create an order and assert that it was created successfully.
+     * Send an HTTP POST request to create an order and assert that it was created successfully.
+     * This will also serialize the request JSON to an {@link OrderDto} and assert its values.
      * This will assert that the order is present in the database.
      * It will also assert that the outbox event is present in the database.
      *
      * @return {@link Order} created order.
      */
-    private Order createAndAssertOrder() throws Exception {
+    private Order postRequestAndAssertOrder() throws Exception {
         var order = new OrderCreateDto(
                 "Computer",
                 199.0
@@ -123,18 +131,22 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     /**
-     * Assert that the order status is as expected.
+     * Send an HTTP GET request to retrieve an order and assert that it was retrieved successfully.
+     * This will also serialize the response JSON to an {@link OrderDto} and assert its values.
      *
      * @param orderId        UUID of the order.
      * @param expectedStatus {@link OrderStatus} expected status of the order.
      */
-    private void assertOrderStatus(UUID orderId, OrderStatus expectedStatus) {
-        var optional = orderRepo.findById(orderId);
-        assertTrue(optional.isPresent());
+    private void getRequestAndAssertOrder(UUID orderId, OrderStatus expectedStatus) throws Exception {
+        var response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
 
-        var updated = optional.get().toModel();
-        assertEquals("Computer", updated.product());
-        assertEquals(199.0, updated.amount());
-        assertEquals(expectedStatus, updated.status());
+        var responseJson = response.getContentAsString();
+        var order = objectMapper.readValue(responseJson, OrderDto.class);
+
+        assertNotNull(order);
+        assertEquals("Computer", order.product());
+        assertEquals(199.0, order.amount());
+        assertEquals(expectedStatus, order.status());
     }
 }
