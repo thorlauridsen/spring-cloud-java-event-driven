@@ -46,7 +46,7 @@ However, you can set up strict ordering such as FIFO but this may reduce perform
 This sample project consists of two independently runnable microservices named **order** and **payment**.
 Each service has a database and is responsible for its own domain.
 Both services will consume and publish relevant events.
-The order service uses 
+The **order** service uses 
 [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot)
 to expose a REST API which has an endpoint for creating a new order.
 Sending a request to this endpoint will initiate the microservices.
