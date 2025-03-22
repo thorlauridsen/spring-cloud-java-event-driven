@@ -9,9 +9,9 @@ spring:
       region:
         static: us-east-1
       sns:
-        endpoint: http://localhost:4566
+        endpoint: ${SPRING_CLOUD_AWS_SNS_ENDPOINT:http://localhost:4566}
       sqs:
-        endpoint: http://localhost:4566
+        endpoint: ${SPRING_CLOUD_AWS_SQS_ENDPOINT:http://localhost:4566}
   application:
     name: sample
 springdoc:

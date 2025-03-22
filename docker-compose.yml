@@ -1,0 +1,57 @@
+services:
+  order:
+    build:
+      context: .
+      dockerfile: docker/order/Dockerfile
+    container_name: spring-boot-java-eda-order
+    image: spring-boot-java-eda-order:latest
+    environment:
+      SPRING_CLOUD_AWS_SNS_ENDPOINT: http://localstack:4566
+      SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+    depends_on:
+      - localstack
+    networks:
+      - localstack_network
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  payment:
+    build:
+      context: .
+      dockerfile: docker/payment/Dockerfile
+    container_name: spring-boot-java-eda-payment
+    image: spring-boot-java-eda-payment:latest
+    environment:
+      SPRING_CLOUD_AWS_SNS_ENDPOINT: http://localstack:4566
+      SPRING_CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+    depends_on:
+      - localstack
+    networks:
+      - localstack_network
+    restart: unless-stopped
+
+  localstack:
+    image: localstack/localstack:4.2.0
+    container_name: localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_SERVICES=sqs,sns
+      - PERSISTENCE=/var/lib/localstack/data
+    volumes:
+      - "./docker/localstack/init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh"
+      - "localstack-data:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: chmod +x /etc/localstack/init/ready.d/init-localstack.sh
+    networks:
+      - localstack_network
+
+networks:
+  localstack_network:
+    driver: bridge
+
+volumes:
+  localstack-data:
