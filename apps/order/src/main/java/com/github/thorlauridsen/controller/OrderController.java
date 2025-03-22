@@ -2,7 +2,9 @@ package com.github.thorlauridsen.controller;
 
 import com.github.thorlauridsen.dto.OrderCreateDto;
 import com.github.thorlauridsen.dto.OrderDto;
+import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.service.OrderService;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +37,20 @@ public class OrderController implements IOrderController {
     @Override
     public ResponseEntity<OrderDto> create(OrderCreateDto dto) {
         var order = orderService.create(dto.toModel());
+        return ResponseEntity.ok(OrderDto.fromModel(order));
+    }
+
+    /**
+     * Get method for order.
+     * This method will convert the model to a DTO and return it.
+     *
+     * @param id UUID of the order to retrieve.
+     * @return {@link ResponseEntity} with {@link OrderDto}.
+     * @throws OrderNotFoundException if the order is not found.
+     */
+    @Override
+    public ResponseEntity<OrderDto> get(UUID id) throws OrderNotFoundException {
+        var order = orderService.findById(id);
         return ResponseEntity.ok(OrderDto.fromModel(order));
     }
 }
