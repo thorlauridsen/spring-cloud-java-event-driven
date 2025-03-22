@@ -146,7 +146,10 @@ clone the project to your local machine, go to the root directory and use:
 ```
 docker-compose up -d
 ```
-This will launch the entire project with LocalStack, PostgreSQL and the two microservices.
+This will launch the entire project with 
+[LocalStack](https://github.com/localstack/localstack), 
+[PostgreSQL](https://www.postgresql.org/) 
+and the two microservices.
 
 ### Gradle
 
