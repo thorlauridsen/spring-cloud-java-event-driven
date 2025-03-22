@@ -4,23 +4,25 @@ import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.event.PaymentFailedEvent;
+import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.outbox.OutboxRepo;
 import com.github.thorlauridsen.persistence.OrderRepo;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sns.core.SnsTemplate;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.UUID;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -58,6 +60,11 @@ public class OrderServiceTest {
     }
 
     @Test
+    public void getOrder_noOrderExists() {
+        assertThrows(OrderNotFoundException.class, () -> orderService.findById(UUID.randomUUID()));
+    }
+
+    @Test
     public void createOrder_paymentCompleted() {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
@@ -67,7 +74,8 @@ public class OrderServiceTest {
                 created.amount()
         );
         orderService.processPaymentCompleted(event);
-        assertOrderStatus(created.id(), OrderStatus.COMPLETED);
+
+        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.COMPLETED));
     }
 
     @Test
@@ -79,7 +87,8 @@ public class OrderServiceTest {
                 created.id()
         );
         orderService.processPaymentFailed(event);
-        assertOrderStatus(created.id(), OrderStatus.CANCELLED);
+
+        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.CANCELLED));
     }
 
     @Test
@@ -93,7 +102,8 @@ public class OrderServiceTest {
         );
         orderService.processPaymentCompleted(event);
         orderService.processPaymentCompleted(event);
-        assertOrderStatus(created.id(), OrderStatus.COMPLETED);
+
+        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.COMPLETED));
     }
 
     @Test
@@ -106,7 +116,8 @@ public class OrderServiceTest {
         );
         orderService.processPaymentFailed(event);
         orderService.processPaymentFailed(event);
-        assertOrderStatus(created.id(), OrderStatus.CANCELLED);
+
+        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.CANCELLED));
     }
 
     /**
@@ -137,20 +148,20 @@ public class OrderServiceTest {
     }
 
     /**
-     * Assert that the order status is as expected.
+     * Get order by id and assert that it was found successfully.
+     * This will also assert that the status of the order is as expected.
      * This will also assert that the processed event is present in the database.
      *
      * @param orderId        UUID of the order.
      * @param expectedStatus {@link OrderStatus} expected status of the order.
+     * @throws OrderNotFoundException if the order is not found.
      */
-    private void assertOrderStatus(UUID orderId, OrderStatus expectedStatus) {
-        var optional = orderRepo.findById(orderId);
-        assertTrue(optional.isPresent());
-
-        var updated = optional.get().toModel();
-        assertEquals("Computer", updated.product());
-        assertEquals(199.0, updated.amount());
-        assertEquals(expectedStatus, updated.status());
+    private void getAndAssertOrder(UUID orderId, OrderStatus expectedStatus) throws OrderNotFoundException {
+        var order = orderService.findById(orderId);
+        assertNotNull(order);
+        assertEquals("Computer", order.product());
+        assertEquals(199.0, order.amount());
+        assertEquals(expectedStatus, order.status());
 
         assertEquals(1, processedEventRepo.count());
     }

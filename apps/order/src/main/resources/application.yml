@@ -1,6 +1,10 @@
 server:
   port: 8080
 spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   cloud:
     aws:
       credentials:
@@ -9,9 +13,9 @@ spring:
       region:
         static: us-east-1
       sns:
-        endpoint: http://localhost:4566
+        endpoint: ${SPRING_CLOUD_AWS_SNS_ENDPOINT:http://localhost:4566}
       sqs:
-        endpoint: http://localhost:4566
+        endpoint: ${SPRING_CLOUD_AWS_SQS_ENDPOINT:http://localhost:4566}
   application:
     name: sample
 springdoc:

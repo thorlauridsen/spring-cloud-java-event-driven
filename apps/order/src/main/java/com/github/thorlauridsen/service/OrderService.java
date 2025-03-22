@@ -4,6 +4,7 @@ import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.event.PaymentFailedEvent;
+import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.persistence.OrderRepoFacade;
@@ -105,12 +106,30 @@ public class OrderService {
     }
 
     /**
+     * Find an order by id.
+     *
+     * @param id UUID of the order.
+     * @return {@link Order}.
+     * @throws OrderNotFoundException if the order is not found.
+     */
+    public Order findById(UUID id) throws OrderNotFoundException {
+        logger.info("Finding order with id: {}", id);
+
+        var order = orderRepo.findById(id);
+        if (order.isEmpty()) {
+            throw new OrderNotFoundException("Order not found with id: " + id);
+        }
+        logger.info("Found order: {}", order);
+        return order.get();
+    }
+
+    /**
      * Update an existing order.
      *
      * @param id     UUID of the order.
      * @param status {@link OrderStatus} to update the order with.
      */
-    public void updateOrder(
+    private void updateOrder(
             UUID id,
             OrderStatus status
     ) {

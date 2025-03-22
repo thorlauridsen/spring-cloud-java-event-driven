@@ -21,9 +21,23 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
+     * Handles all domain exceptions.
+     * If any {@link DomainException} is thrown, this method will
+     * catch it and return a response entity with an {@link ErrorDto}.
+     * The returned HTTP status code will be derived from the specific {@link DomainException}.
+     *
+     * @param exception The domain exception to handle.
+     * @return A response entity with an {@link ErrorDto}.
+     */
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorDto> handleDomainException(DomainException exception) {
+        return error(exception, exception.getHttpStatus());
+    }
+
+    /**
      * Handles all exceptions.
      * If any exception is thrown, this method will catch it and return a response entity with an {@link ErrorDto}.
-     * Returns an HTTP 500 status code.
+     * Returns an HTTP 500 status code if no domain exception is thrown.
      *
      * @param exception The exception to handle.
      * @return A response entity with an {@link ErrorDto}.

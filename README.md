@@ -27,8 +27,11 @@ them which will likely lead to new events being published from the same service.
 
 ### Benefits
 
-- **Decoupling**: Producers and consumers do not need to communicate directly so there is no waiting for a response. 
-- **Scalability**: Consumers process events independently, allowing high scalability.
+- **Decoupling**: Producers and consumers do not need to communicate directly so there is no waiting for a response.
+Services can evolve independently without the risk of introducing system-wide issues.
+- **Scalability**: Microservices are loosely coupled so it is easier to scale without affecting other parts of the system.
+- **Flexibility**: It is easier to add new functionality without affecting other services.
+You can even use different technologies for separate microservices.
 - **Performance**: Events can be processed in parallel by multiple consumers.
 
 ### Obstacles
@@ -43,7 +46,7 @@ However, you can set up strict ordering such as FIFO but this may reduce perform
 This sample project consists of two independently runnable microservices named **order** and **payment**.
 Each service has a database and is responsible for its own domain.
 Both services will consume and publish relevant events.
-The order service uses 
+The **order** service uses 
 [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot)
 to expose a REST API which has an endpoint for creating a new order.
 Sending a request to this endpoint will initiate the microservices.
@@ -138,12 +141,25 @@ A benefit here is that multiple services do not need to rely and depend on the s
 shared database schema. This allows for more scalability and independence.
 A specific service could even use a completely different database technology than another service.
 
-## Setup
+## Usage
+
+### Docker Compose
+To run the system with [Docker Compose](https://docs.docker.com/compose/),
+clone the project to your local machine, go to the root directory and use:
+```
+docker-compose up -d
+```
+This will launch the entire project with 
+[LocalStack](https://github.com/localstack/localstack), 
+[PostgreSQL](https://www.postgresql.org/) 
+and the two microservices.
+
+### Gradle
 
 For this project I have decided to create an independent SQS queue and SNS topic for each event.
-You can use 
-[LocalStack](https://github.com/localstack/localstack) 
-to run AWS services locally through 
+You can use
+[LocalStack](https://github.com/localstack/localstack)
+to run AWS services locally through
 [Docker](https://www.docker.com/).
 If you wish to run the microservices in this project,
 you must first start LocalStack and create the queues and topics.
@@ -169,8 +185,6 @@ awslocal sqs get-queue-attributes --queue-url http://sqs.us-east-1.localhost.loc
 awslocal sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:payment-failed-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:payment-failed-queue
 ```
 
-## Usage
-
 Clone the project to your local machine, go to the root directory and use
 these two commands in separate terminals.
 ```
@@ -179,6 +193,7 @@ these two commands in separate terminals.
 ```
 ./gradlew payment:bootRun
 ```
+This will start the two microservices each using an in-memory H2 database.
 You can also use IntelliJ IDEA to easily run the two services at once.
 
 ### Swagger Documentation
@@ -195,6 +210,7 @@ to view the Swagger documentation for the **order** service.
 - [Springdoc](https://github.com/springdoc/springdoc-openapi) - Provides Swagger documentation for REST APIs
 - [Spring Boot Web MVC](https://github.com/spring-projects/spring-boot) - For creating REST APIs
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/index.html) - Repository support for JPA
+- [PostgreSQL](https://www.postgresql.org/) - Open-source relational database
 - [H2database](https://github.com/h2database/h2database) - Provides an in-memory database for simple local testing
 - [Liquibase](https://github.com/liquibase/liquibase) - Used to manage database schema changelogs
 
