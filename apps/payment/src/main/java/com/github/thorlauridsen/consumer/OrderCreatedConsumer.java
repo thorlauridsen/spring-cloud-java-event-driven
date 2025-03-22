@@ -45,7 +45,7 @@ public class OrderCreatedConsumer extends EventConsumer<OrderCreatedEvent> {
      * @param json The JSON message from the SQS queue as a String.
      */
     @Override
-    @SqsListener("arn:aws:sqs:us-east-1:000000000000:order-created-queue")
+    @SqsListener("order-created-queue")
     public void listen(String json) {
         super.listen(json);
     }

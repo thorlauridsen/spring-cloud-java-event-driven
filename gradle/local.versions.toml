@@ -4,6 +4,7 @@ h2database = "2.3.232"
 jackson = "2.18.3"
 junitPlatformLauncher = "1.11.4"
 liquibase = "4.31.1"
+postgres = "42.7.5"
 springboot = "3.4.4"
 springDependencyPlugin = "1.1.7"
 springdoc = "2.8.5"
@@ -25,6 +26,9 @@ liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liqui
 
 # FasterXML Jackson libraries for JSON serialization
 jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
+
+# PostgreSQL for live database
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
 # Spring Boot libraries
 springboot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "springboot" }

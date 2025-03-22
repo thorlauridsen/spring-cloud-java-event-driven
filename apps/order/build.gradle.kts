@@ -28,6 +28,9 @@ dependencies {
 	// H2 database dependency for in-memory database
 	runtimeOnly(local.h2database)
 
+	// PostgreSQL database driver
+	runtimeOnly(local.postgres)
+
 	// Liquibase core dependency for database migrations
 	runtimeOnly(local.liquibase.core)
 
