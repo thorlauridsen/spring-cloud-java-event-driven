@@ -1,9 +1,8 @@
-package com.github.thorlauridsen.dto;
+package com.github.thorlauridsen.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.OffsetDateTime;
 
 /**
