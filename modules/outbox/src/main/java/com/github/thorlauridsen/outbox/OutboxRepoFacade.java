@@ -55,7 +55,7 @@ public class OutboxRepoFacade {
                     json
             );
             var saved = outboxRepo.save(outbox);
-            logger.info("Saved outbox event: {} {}", saved.getEventType(), saved.getId());
+            logger.info("Saved outbox event: {} {}", saved.getEventType(), saved.getEventId());
 
         } catch (JsonProcessingException ex) {
             logger.error("Failed to save outbox event {} - {}", event.getId(), ex.getMessage(), ex);

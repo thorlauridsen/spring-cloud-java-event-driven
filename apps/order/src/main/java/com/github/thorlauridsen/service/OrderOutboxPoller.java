@@ -49,7 +49,7 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
             logger.info("Publishing order event: {} - {}", event.getEventType(), event.getPayload());
 
             if (event.getEventType() != EventType.ORDER_CREATED) {
-                logger.warn("Unknown order event type: {}", event.getEventType());
+                logger.warn("Invalid order event type: {}", event.getEventType());
                 return;
             }
             var createdEvent = objectMapper.readValue(event.getPayload(), OrderCreatedEvent.class);
@@ -57,10 +57,10 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
 
             var updated = OutboxEntity.markProcessed(event);
             outboxRepo.save(updated);
-            logger.info("Successfully processed order outbox event: {} {}", event.getEventType(), event.getId());
+            logger.info("Successfully processed order outbox event: {} {}", event.getEventType(), event.getEventId());
 
         } catch (Exception e) {
-            logger.error("Failed to process order event: {}", event.getId(), e);
+            logger.error("Failed to process order event: {}", event.getEventId(), e);
         }
     }
 }

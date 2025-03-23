@@ -28,15 +28,9 @@ import java.util.UUID;
 public class OutboxEntity {
 
     /**
-     * Unique identifier for the outbox entity.
-     */
-    @Id
-    @GeneratedValue
-    private UUID id;
-
-    /**
      * Unique identifier for the event.
      */
+    @Id
     @Column(nullable = false)
     private UUID eventId;
 
@@ -84,19 +78,15 @@ public class OutboxEntity {
     }
 
     /**
-     * Constructor for copying an OutboxEntity while possibly modifying a field.
-     * This is for example used in the markProcessed() method.
-     * This constructor is set to private to avoid other classes
+     * Constructor for OutboxEntity.
      */
-    private OutboxEntity(
-            UUID id,
+    public OutboxEntity(
             UUID eventId,
             EventType eventType,
             String payload,
             OffsetDateTime createdAt,
             boolean processed
     ) {
-        this.id = id;
         this.eventId = eventId;
         this.eventType = eventType;
         this.payload = payload;
@@ -113,17 +103,12 @@ public class OutboxEntity {
      */
     public static OutboxEntity markProcessed(OutboxEntity outbox) {
         return new OutboxEntity(
-                outbox.getId(),
                 outbox.getEventId(),
                 outbox.getEventType(),
                 outbox.getPayload(),
                 outbox.getCreatedAt(),
                 true
         );
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public UUID getEventId() {

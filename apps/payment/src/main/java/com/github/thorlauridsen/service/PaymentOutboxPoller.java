@@ -63,15 +63,15 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
                     paymentFailedProducer.publish(failedEvent);
                     break;
                 default:
-                    logger.warn("Unknown payment event type: {}", event.getEventType());
+                    logger.warn("Invalid payment event type: {}", event.getEventType());
                     return;
             }
             var updated = OutboxEntity.markProcessed(event);
             outboxRepo.save(updated);
-            logger.info("Successfully processed payment outbox event: {} {}", event.getEventType(), event.getId());
+            logger.info("Successfully processed payment outbox event: {} {}", event.getEventType(), event.getEventId());
 
         } catch (Exception e) {
-            logger.error("Failed to process payment event: {}", event.getId(), e);
+            logger.error("Failed to process payment event: {}", event.getEventId(), e);
         }
     }
 }

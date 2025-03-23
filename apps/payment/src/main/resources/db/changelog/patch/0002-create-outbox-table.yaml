@@ -7,15 +7,10 @@ databaseChangeLog:
             tableName: outbox
             columns:
               - column:
-                  name: id
-                  type: UUID
-                  constraints:
-                    primaryKey: true
-              - column:
                   name: event_id
                   type: UUID
                   constraints:
-                    nullable: false
+                    primaryKey: true
               - column:
                   name: event_type
                   type: VARCHAR(255)
