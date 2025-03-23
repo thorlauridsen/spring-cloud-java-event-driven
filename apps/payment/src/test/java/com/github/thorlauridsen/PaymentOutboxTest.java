@@ -122,6 +122,9 @@ public class PaymentOutboxTest {
         assertNotNull(event.getCreatedAt());
         assertNotNull(event.getPayload());
         assertEquals(expectedEventType, event.getEventType());
+
+        paymentOutboxPoller.pollOutboxTable();
+        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
     }
 
     /**
