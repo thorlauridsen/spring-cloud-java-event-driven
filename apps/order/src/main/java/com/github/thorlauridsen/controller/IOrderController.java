@@ -56,8 +56,8 @@ public interface IOrderController {
      */
     @GetMapping("/{id}")
     @Operation(
-            summary = "Retrieve a order",
-            description = "Retrieve a order"
+            summary = "Retrieve an order",
+            description = "Retrieve an order"
     )
     @ApiResponse(
             responseCode = "200",
