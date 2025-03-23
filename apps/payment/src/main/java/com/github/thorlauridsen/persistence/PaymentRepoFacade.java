@@ -2,6 +2,8 @@ package com.github.thorlauridsen.persistence;
 
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -43,5 +45,16 @@ public class PaymentRepoFacade {
         );
         var saved = repo.save(entity);
         return saved.toModel();
+    }
+
+    /**
+     * Find a payment by order id.
+     *
+     * @param orderId UUID of the order related to the payment.
+     * @return {@link Optional} of {@link Payment}.
+     */
+    public Optional<Payment> findByOrderId(UUID orderId) {
+        var found = repo.findByOrderId(orderId);
+        return found.map(PaymentEntity::toModel);
     }
 }

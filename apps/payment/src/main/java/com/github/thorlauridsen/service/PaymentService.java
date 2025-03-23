@@ -3,9 +3,12 @@ package com.github.thorlauridsen.service;
 import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
+import com.github.thorlauridsen.exception.PaymentNotFoundException;
+import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.persistence.PaymentRepoFacade;
 import java.util.Random;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -77,5 +80,23 @@ public class PaymentService {
         var saved = paymentRepo.create(payment);
         deduplicationService.record(event.getId());
         outboxService.prepare(saved);
+    }
+
+    /**
+     * Find a payment by order id.
+     *
+     * @param orderId UUID of the order related to the payment.
+     * @return {@link Payment}.
+     * @throws PaymentNotFoundException if the payment is not found.
+     */
+    public Payment findByOrderId(UUID orderId) throws PaymentNotFoundException {
+        logger.info("Finding payment with order id: {}", orderId);
+
+        var payment = paymentRepo.findByOrderId(orderId);
+        if (payment.isEmpty()) {
+            throw new PaymentNotFoundException("Payment not found with order id: " + orderId);
+        }
+        logger.info("Found payment: {}", payment);
+        return payment.get();
     }
 }

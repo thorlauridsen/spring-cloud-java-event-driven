@@ -1,8 +1,9 @@
 package com.github.thorlauridsen;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
+import com.github.thorlauridsen.dto.PaymentDto;
 import com.github.thorlauridsen.event.OrderCreatedEvent;
-import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.outbox.OutboxRepo;
 import com.github.thorlauridsen.persistence.PaymentRepo;
 import com.github.thorlauridsen.service.PaymentService;
@@ -11,30 +12,23 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static com.github.thorlauridsen.controller.BaseEndpoint.PAYMENT_BASE_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
 @ActiveProfiles("test")
-public class PaymentServiceTest {
+public class PaymentControllerTest extends BaseMockMvc {
 
-    @Autowired
-    private OutboxRepo outboxRepo;
-
-    @Autowired
-    private PaymentRepo paymentRepo;
-
-    @Autowired
-    private PaymentService paymentService;
-
-    @Autowired
-    private ProcessedEventRepo processedEventRepo;
+    private final ObjectMapper objectMapper;
+    private final OutboxRepo outboxRepo;
+    private final PaymentRepo paymentRepo;
+    private final PaymentService paymentService;
+    private final ProcessedEventRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -43,6 +37,23 @@ public class PaymentServiceTest {
      */
     @MockitoBean
     private SnsTemplate snsTemplate;
+
+    @Autowired
+    public PaymentControllerTest(
+            MockMvc mockMvc,
+            ObjectMapper objectMapper,
+            OutboxRepo outboxRepo,
+            PaymentRepo paymentRepo,
+            PaymentService paymentService,
+            ProcessedEventRepo processedEventRepo
+    ) {
+        super(mockMvc);
+        this.objectMapper = objectMapper;
+        this.outboxRepo = outboxRepo;
+        this.paymentRepo = paymentRepo;
+        this.paymentService = paymentService;
+        this.processedEventRepo = processedEventRepo;
+    }
 
     @BeforeEach
     public void setup() {
@@ -55,12 +66,14 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void getPayment_noPaymentExists() {
-        assertThrows(PaymentNotFoundException.class, () -> paymentService.findByOrderId(UUID.randomUUID()));
+    public void getPayment_noPaymentExists() throws Exception {
+        var orderId = UUID.randomUUID();
+        var response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + orderId);
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
-    public void processOrderCreated() {
+    public void processOrderCreated_getPayment_paymentExists() throws Exception {
         var event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -69,33 +82,14 @@ public class PaymentServiceTest {
         );
         paymentService.processOrderCreated(event);
 
-        assertDoesNotThrow(() -> getAndAssertPayment(event.getOrderId()));
-    }
+        var response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + event.getOrderId());
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
 
-    @Test
-    public void processOrderCreated_deduplicationWorks() {
-        var event = new OrderCreatedEvent(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                "Computer",
-                199.0
-        );
-        paymentService.processOrderCreated(event);
-        paymentService.processOrderCreated(event);
+        var responseJson = response.getContentAsString();
+        var payment = objectMapper.readValue(responseJson, PaymentDto.class);
 
-        assertDoesNotThrow(() -> getAndAssertPayment(event.getOrderId()));
-    }
-
-    /**
-     * Get payment by order id and assert that it was found successfully.
-     * This will also assert that the outbox, payment and processed event are present in the database.
-     *
-     * @param orderId UUID of the order related to the payment.
-     * @throws PaymentNotFoundException if the payment is not found.
-     */
-    private void getAndAssertPayment(UUID orderId) throws PaymentNotFoundException {
-        var payment = paymentService.findByOrderId(orderId);
         assertNotNull(payment);
+        assertEquals(event.getOrderId(), payment.orderId());
         assertEquals(199.0, payment.amount());
 
         assertEquals(1, outboxRepo.count());
