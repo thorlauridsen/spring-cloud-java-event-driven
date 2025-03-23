@@ -1,9 +1,9 @@
 package com.github.thorlauridsen.persistence;
 
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 /**
  * Payment repository interface.
@@ -12,4 +12,12 @@ import java.util.UUID;
  */
 @Repository
 public interface PaymentRepo extends JpaRepository<PaymentEntity, UUID> {
+
+    /**
+     * Find a payment by order id.
+     *
+     * @param orderId UUID of the order.
+     * @return {@link Optional} of {@link PaymentEntity}.
+     */
+    Optional<PaymentEntity> findByOrderId(UUID orderId);
 }
