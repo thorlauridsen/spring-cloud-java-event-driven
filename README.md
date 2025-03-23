@@ -382,10 +382,13 @@ consumer
 deduplication  
 └─ event
 
+event  
+└─ event
+
 outbox  
 └─ event
 
-event, jackson, model and producer has no dependencies
+jackson, model and producer has no dependencies
 ```
 
 ## Meta
