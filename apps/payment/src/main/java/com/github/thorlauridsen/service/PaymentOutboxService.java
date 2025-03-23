@@ -1,12 +1,11 @@
 package com.github.thorlauridsen.service;
 
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.Payment;
-import com.github.thorlauridsen.outbox.OutboxRepoFacade;
-import org.springframework.stereotype.Service;
-
+import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
+import com.github.thorlauridsen.model.event.PaymentFailedEvent;
+import com.github.thorlauridsen.outbox.OutboxEventRepo;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 /**
  * Service class for the payment outbox.
@@ -15,14 +14,14 @@ import java.util.UUID;
 @Service
 public class PaymentOutboxService {
 
-    private final OutboxRepoFacade outboxRepo;
+    private final OutboxEventRepo outboxRepo;
 
     /**
      * Constructor for PaymentOutboxService.
      *
-     * @param outboxRepo {@link OutboxRepoFacade}
+     * @param outboxRepo {@link OutboxEventRepo}
      */
-    public PaymentOutboxService(OutboxRepoFacade outboxRepo) {
+    public PaymentOutboxService(OutboxEventRepo outboxRepo) {
         this.outboxRepo = outboxRepo;
     }
 

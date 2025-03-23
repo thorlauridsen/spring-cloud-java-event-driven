@@ -2,12 +2,13 @@ package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.OrderStatus;
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
-import com.github.thorlauridsen.persistence.OrderRepoFacade;
+import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
+import com.github.thorlauridsen.model.event.PaymentFailedEvent;
+import com.github.thorlauridsen.persistence.IOrderRepo;
+import com.github.thorlauridsen.persistence.OrderRepo;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
  * Order service class.
  * <p>
  * It is annotated with {@link Service} to allow Spring to automatically inject it where needed.
- * This class uses the {@link OrderRepoFacade} to interact with the repository.
+ * This class uses the {@link OrderRepo} to interact with the repository.
  * <p>
  * The service class knows nothing about data transfer objects or database entities.
  * It only knows about the model classes and here you can implement business logic.
@@ -30,19 +31,19 @@ public class OrderService {
 
     private final DeduplicationService deduplicationService;
     private final OrderOutboxService outboxService;
-    private final OrderRepoFacade orderRepo;
+    private final IOrderRepo orderRepo;
 
     /**
      * Constructor for OrderService.
      *
      * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
-     * @param orderRepo            {@link OrderRepoFacade} for interacting with the order repository.
+     * @param orderRepo            {@link IOrderRepo} for interacting with the order repository.
      * @param outboxService        {@link OrderOutboxService} for preparing outbox events.
      */
     public OrderService(
             DeduplicationService deduplicationService,
             OrderOutboxService outboxService,
-            OrderRepoFacade orderRepo
+            IOrderRepo orderRepo
     ) {
         this.deduplicationService = deduplicationService;
         this.outboxService = outboxService;

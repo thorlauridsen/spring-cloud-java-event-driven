@@ -1,7 +1,6 @@
 package com.github.thorlauridsen.model;
 
 import com.github.thorlauridsen.enumeration.PaymentStatus;
-
 import java.util.UUID;
 
 /**

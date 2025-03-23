@@ -1,13 +1,12 @@
 package com.github.thorlauridsen.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.event.BaseEvent;
-import com.github.thorlauridsen.event.SnsNotification;
+import com.github.thorlauridsen.event.BaseEventDto;
+import com.github.thorlauridsen.event.SnsNotificationDto;
 import io.awspring.cloud.sqs.annotation.SqsListener;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Abstract class for an event consumer.
@@ -15,7 +14,7 @@ import java.io.IOException;
  *
  * @param <T> The type of event to consume.
  */
-public abstract class EventConsumer<T extends BaseEvent> {
+public abstract class BaseEventConsumer<T extends BaseEventDto> {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
@@ -25,7 +24,7 @@ public abstract class EventConsumer<T extends BaseEvent> {
      *
      * @param objectMapper FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
      */
-    public EventConsumer(ObjectMapper objectMapper) {
+    public BaseEventConsumer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
@@ -41,7 +40,7 @@ public abstract class EventConsumer<T extends BaseEvent> {
         try {
             logger.debug("Received JSON: {}", json);
 
-            var notification = objectMapper.readValue(json, SnsNotification.class);
+            var notification = objectMapper.readValue(json, SnsNotificationDto.class);
             logger.debug("Received SNS notification: {}", notification);
 
             var eventJson = notification.message();

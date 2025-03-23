@@ -2,11 +2,12 @@ package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
 import com.github.thorlauridsen.enumeration.PaymentStatus;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
-import com.github.thorlauridsen.persistence.PaymentRepoFacade;
+import com.github.thorlauridsen.model.event.OrderCreatedEvent;
+import com.github.thorlauridsen.persistence.IPaymentRepo;
+import com.github.thorlauridsen.persistence.PaymentRepo;
 import java.util.Random;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
  * Payment service class.
  * <p>
  * It is annotated with {@link Service} to allow Spring to automatically inject it where needed.
- * This class uses the {@link PaymentRepoFacade} to interact with the repository.
+ * This class uses the {@link PaymentRepo} to interact with the repository.
  * <p>
  * The service class knows nothing about data transfer objects or database entities.
  * It only knows about the model classes and here you can implement business logic.
@@ -30,19 +31,19 @@ public class PaymentService {
 
     private final DeduplicationService deduplicationService;
     private final PaymentOutboxService outboxService;
-    private final PaymentRepoFacade paymentRepo;
+    private final IPaymentRepo paymentRepo;
 
     /**
      * Constructor for PaymentService.
      *
      * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
      * @param outboxService        {@link PaymentOutboxService} for preparing outbox events.
-     * @param paymentRepo          {@link PaymentRepoFacade} for interacting with the payment table.
+     * @param paymentRepo          {@link IPaymentRepo} for interacting with the payment table.
      */
     public PaymentService(
             DeduplicationService deduplicationService,
             PaymentOutboxService outboxService,
-            PaymentRepoFacade paymentRepo
+            IPaymentRepo paymentRepo
     ) {
         this.deduplicationService = deduplicationService;
         this.outboxService = outboxService;
@@ -77,7 +78,7 @@ public class PaymentService {
                 status,
                 event.getAmount()
         );
-        var saved = paymentRepo.create(payment);
+        var saved = paymentRepo.save(payment);
         deduplicationService.record(event.getId());
         outboxService.prepareEvent(saved);
     }

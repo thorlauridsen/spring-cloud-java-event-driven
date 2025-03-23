@@ -1,8 +1,6 @@
-package com.github.thorlauridsen.event;
+package com.github.thorlauridsen.model.event;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.github.thorlauridsen.enumeration.EventType;
 import java.util.UUID;
 
 /**
@@ -22,12 +20,11 @@ public class OrderCreatedEvent extends BaseEvent {
      * @param product name of the product.
      * @param amount  amount of the product.
      */
-    @JsonCreator
     public OrderCreatedEvent(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("orderId") UUID orderId,
-            @JsonProperty("product") String product,
-            @JsonProperty("amount") double amount
+            UUID id,
+            UUID orderId,
+            String product,
+            double amount
     ) {
         super(id, EventType.ORDER_CREATED);
         this.orderId = orderId;

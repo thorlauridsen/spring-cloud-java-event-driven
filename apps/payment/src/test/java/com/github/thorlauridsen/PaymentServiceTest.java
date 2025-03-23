@@ -1,10 +1,10 @@
 package com.github.thorlauridsen;
 
-import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
+import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
 import com.github.thorlauridsen.exception.PaymentNotFoundException;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.persistence.PaymentRepo;
+import com.github.thorlauridsen.model.event.OrderCreatedEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.persistence.PaymentJpaRepo;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
@@ -25,16 +25,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class PaymentServiceTest {
 
     @Autowired
-    private OutboxRepo outboxRepo;
+    private OutboxEventJpaRepo outboxEventRepo;
 
     @Autowired
-    private PaymentRepo paymentRepo;
+    private PaymentJpaRepo paymentRepo;
 
     @Autowired
     private PaymentService paymentService;
 
     @Autowired
-    private ProcessedEventRepo processedEventRepo;
+    private ProcessedEventJpaRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -46,10 +46,10 @@ public class PaymentServiceTest {
 
     @BeforeEach
     public void setup() {
-        outboxRepo.deleteAll();
+        outboxEventRepo.deleteAll();
         paymentRepo.deleteAll();
         processedEventRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
         assertEquals(0, paymentRepo.count());
         assertEquals(0, processedEventRepo.count());
     }
@@ -98,7 +98,7 @@ public class PaymentServiceTest {
         assertNotNull(payment);
         assertEquals(199.0, payment.amount());
 
-        assertEquals(1, outboxRepo.count());
+        assertEquals(1, outboxEventRepo.count());
         assertEquals(1, paymentRepo.count());
         assertEquals(1, processedEventRepo.count());
     }

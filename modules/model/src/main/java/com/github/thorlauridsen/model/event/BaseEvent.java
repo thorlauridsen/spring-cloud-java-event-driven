@@ -1,5 +1,6 @@
-package com.github.thorlauridsen.event;
+package com.github.thorlauridsen.model.event;
 
+import com.github.thorlauridsen.enumeration.EventType;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
