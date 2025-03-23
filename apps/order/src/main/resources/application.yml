@@ -24,3 +24,9 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /
+app:
+  queues:
+    payment-completed: payment-completed-queue
+    payment-failed: payment-failed-queue
+  topics:
+    order-created: order-created-topic
