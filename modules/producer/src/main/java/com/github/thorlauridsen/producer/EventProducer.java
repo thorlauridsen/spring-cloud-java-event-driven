@@ -1,5 +1,6 @@
 package com.github.thorlauridsen.producer;
 
+import com.github.thorlauridsen.event.BaseEvent;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +9,9 @@ import org.slf4j.LoggerFactory;
  * Abstract class for an event producer.
  * This contains common logic for all event producers.
  *
- * @param <T>
+ * @param <T> The type of event to publish.
  */
-public abstract class EventProducer<T> {
+public abstract class EventProducer<T extends BaseEvent> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SnsTemplate snsTemplate;
@@ -37,6 +38,6 @@ public abstract class EventProducer<T> {
      */
     public void publish(T event) {
         snsTemplate.convertAndSend(topicArn, event);
-        logger.info("Sent event: {}", event);
+        logger.info("Sent event: {} {}", event.getEventType(), event.getId());
     }
 }
