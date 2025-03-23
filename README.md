@@ -363,37 +363,42 @@ dependencies {
 This essentially allows us to define this structure:
 
 ```
-order  
-│─ consumer  
-│─ event  
-│─ exception  
-│─ jackson  
-│─ model  
-│─ outbox  
+order
+│─ consumer
+│─ event
+│─ exception
+│─ jackson
+│─ model
+│─ outbox
 └─ producer
 
-payment  
-│─ consumer  
-│─ event  
-│─ exception  
-│─ jackson  
-│─ model  
-│─ outbox  
+payment
+│─ consumer
+│─ event
+│─ exception
+│─ jackson
+│─ model
+│─ outbox
 └─ producer
 
-consumer  
-└─ event
+consumer
+│─ event
+└─ model
 
-deduplication  
-└─ event
+deduplication
+└─ model
 
-event  
-└─ event
+event
+└─ model
 
-outbox  
-└─ event
+outbox
+└─ model
 
-exception, jackson, model and producer has no dependencies
+producer
+│─ event
+└─ model
+
+exception, jackson and model has no dependencies
 ```
 
 ## Meta
