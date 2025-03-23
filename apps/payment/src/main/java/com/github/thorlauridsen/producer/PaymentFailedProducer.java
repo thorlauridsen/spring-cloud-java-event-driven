@@ -2,6 +2,7 @@ package com.github.thorlauridsen.producer;
 
 import com.github.thorlauridsen.event.PaymentFailedEvent;
 import io.awspring.cloud.sns.core.SnsTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,8 +16,12 @@ public class PaymentFailedProducer extends EventProducer<PaymentFailedEvent> {
      * Constructor for PaymentFailedProducer.
      *
      * @param snsTemplate {@link SnsTemplate} to publish the event to the SNS topic.
+     * @param topicArn    The SNS topic ARN to publish the event to.
      */
-    public PaymentFailedProducer(SnsTemplate snsTemplate) {
-        super(snsTemplate, "arn:aws:sns:us-east-1:000000000000:payment-failed-topic");
+    public PaymentFailedProducer(
+            SnsTemplate snsTemplate,
+            @Value("${app.topics.payment-failed}") String topicArn
+    ) {
+        super(snsTemplate, topicArn);
     }
 }
