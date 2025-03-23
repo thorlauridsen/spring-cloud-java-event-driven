@@ -1,8 +1,8 @@
 package com.github.thorlauridsen.controller;
 
-import com.github.thorlauridsen.dto.ErrorDto;
 import com.github.thorlauridsen.dto.OrderCreateDto;
 import com.github.thorlauridsen.dto.OrderDto;
+import com.github.thorlauridsen.exception.ErrorDto;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

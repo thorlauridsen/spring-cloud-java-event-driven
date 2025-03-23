@@ -8,6 +8,7 @@ dependencies {
 	implementation(projects.consumer)
 	implementation(projects.deduplication)
 	implementation(projects.event)
+	implementation(projects.exception)
 	implementation(projects.jackson)
 	implementation(projects.model)
 	implementation(projects.outbox)
