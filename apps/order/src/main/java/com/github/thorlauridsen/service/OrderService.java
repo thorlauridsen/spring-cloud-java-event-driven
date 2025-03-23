@@ -103,7 +103,7 @@ public class OrderService {
         var saved = orderRepo.create(order);
         logger.info("Order created with id: {}", saved.id());
 
-        outboxService.prepare(saved);
+        outboxService.prepareEvent(saved);
         return saved;
     }
 

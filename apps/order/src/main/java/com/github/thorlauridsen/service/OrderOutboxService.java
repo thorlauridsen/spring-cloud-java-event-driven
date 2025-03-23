@@ -37,7 +37,7 @@ public class OrderOutboxService {
      *
      * @param order {@link Order}
      */
-    public void prepare(Order order) {
+    public void prepareEvent(Order order) {
         if (order.status() != OrderStatus.CREATED) {
             logger.warn("Could not prepare order with order status: {}", order.status());
             return;

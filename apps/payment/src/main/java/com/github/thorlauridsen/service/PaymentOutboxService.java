@@ -35,7 +35,7 @@ public class PaymentOutboxService {
      *
      * @param payment {@link Payment}
      */
-    public void prepare(Payment payment) {
+    public void prepareEvent(Payment payment) {
         switch (payment.status()) {
             case COMPLETED -> {
                 var event = new PaymentCompletedEvent(

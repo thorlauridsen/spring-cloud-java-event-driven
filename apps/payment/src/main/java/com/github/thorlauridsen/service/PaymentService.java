@@ -79,7 +79,7 @@ public class PaymentService {
         );
         var saved = paymentRepo.create(payment);
         deduplicationService.record(event.getId());
-        outboxService.prepare(saved);
+        outboxService.prepareEvent(saved);
     }
 
     /**
