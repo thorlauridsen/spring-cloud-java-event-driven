@@ -59,8 +59,9 @@ public class OrderService {
      * This might be redundant as this method is already idempotent but this is just for showcasing.
      *
      * @param event {@link PaymentCompletedEvent}.
+     * @throws OrderNotFoundException if the order is not found.
      */
-    public void processPaymentCompleted(PaymentCompletedEvent event) {
+    public void processPaymentCompleted(PaymentCompletedEvent event) throws OrderNotFoundException {
         if (deduplicationService.isDuplicate(event.getId())) {
             logger.warn("Event already processed with id: {}", event.getId());
             return;
@@ -79,8 +80,9 @@ public class OrderService {
      * This might be redundant as this method is already idempotent but this is just for showcasing.
      *
      * @param event {@link PaymentFailedEvent}.
+     * @throws OrderNotFoundException if the order is not found.
      */
-    public void processPaymentFailed(PaymentFailedEvent event) {
+    public void processPaymentFailed(PaymentFailedEvent event) throws OrderNotFoundException {
         if (deduplicationService.isDuplicate(event.getId())) {
             logger.warn("Event already processed with id: {}", event.getId());
             return;
@@ -128,15 +130,16 @@ public class OrderService {
      *
      * @param id     UUID of the order.
      * @param status {@link OrderStatus} to update the order with.
+     * @throws OrderNotFoundException if the order is not found.
      */
     private void updateOrder(
             UUID id,
             OrderStatus status
-    ) {
+    ) throws OrderNotFoundException {
+
         var optionalOrder = orderRepo.findById(id);
         if (optionalOrder.isEmpty()) {
-            logger.warn("Order not found with id: {}", id);
-            return;
+            throw new OrderNotFoundException("Order not found with id: " + id);
         }
 
         var foundOrder = optionalOrder.get();

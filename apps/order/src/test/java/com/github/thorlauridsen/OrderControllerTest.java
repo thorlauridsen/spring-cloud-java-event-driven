@@ -1,6 +1,7 @@
 package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
 import com.github.thorlauridsen.dto.OrderCreateDto;
 import com.github.thorlauridsen.dto.OrderDto;
 import com.github.thorlauridsen.enumeration.OrderStatus;
@@ -33,6 +34,7 @@ public class OrderControllerTest extends BaseMockMvc {
     private final OrderService orderService;
     private final OrderRepo orderRepo;
     private final OutboxRepo outboxRepo;
+    private final ProcessedEventRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -48,21 +50,25 @@ public class OrderControllerTest extends BaseMockMvc {
             ObjectMapper objectMapper,
             OrderService orderService,
             OrderRepo orderRepo,
-            OutboxRepo outboxRepo
+            OutboxRepo outboxRepo,
+            ProcessedEventRepo processedEventRepo
     ) {
         super(mockMvc);
         this.objectMapper = objectMapper;
         this.orderService = orderService;
         this.orderRepo = orderRepo;
         this.outboxRepo = outboxRepo;
+        this.processedEventRepo = processedEventRepo;
     }
 
     @BeforeEach
     public void setup() {
         orderRepo.deleteAll();
         outboxRepo.deleteAll();
-        assertEquals(0, orderRepo.count());
+        processedEventRepo.deleteAll();
         assertEquals(0, outboxRepo.count());
+        assertEquals(0, orderRepo.count());
+        assertEquals(0, processedEventRepo.count());
     }
 
     @Test
@@ -73,7 +79,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void createOrder_paymentCompleted() throws Exception {
+    public void createOrder_processPaymentCompleted() throws Exception {
         var created = postRequestAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -86,7 +92,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void createOrder_paymentFailed() throws Exception {
+    public void createOrder_processPaymentFailed() throws Exception {
         var created = postRequestAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
@@ -133,6 +139,7 @@ public class OrderControllerTest extends BaseMockMvc {
     /**
      * Send an HTTP GET request to retrieve an order and assert that it was retrieved successfully.
      * This will also serialize the response JSON to an {@link OrderDto} and assert its values.
+     * This will also assert that the processed event is present in the database.
      *
      * @param orderId        UUID of the order.
      * @param expectedStatus {@link OrderStatus} expected status of the order.
@@ -148,5 +155,7 @@ public class OrderControllerTest extends BaseMockMvc {
         assertEquals("Computer", order.product());
         assertEquals(199.0, order.amount());
         assertEquals(expectedStatus, order.status());
+
+        assertEquals(1, processedEventRepo.count());
     }
 }

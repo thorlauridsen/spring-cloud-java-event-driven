@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public abstract class EventConsumer<T extends BaseEvent> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
 
     /**

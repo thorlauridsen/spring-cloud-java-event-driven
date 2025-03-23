@@ -54,8 +54,8 @@ public class OrderServiceTest {
         orderRepo.deleteAll();
         outboxRepo.deleteAll();
         processedEventRepo.deleteAll();
-        assertEquals(0, orderRepo.count());
         assertEquals(0, outboxRepo.count());
+        assertEquals(0, orderRepo.count());
         assertEquals(0, processedEventRepo.count());
     }
 
@@ -65,7 +65,28 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_paymentCompleted() {
+    public void processPaymentCompleted_noOrderExists() {
+        var event = new PaymentCompletedEvent(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                199.0
+        );
+        assertThrows(OrderNotFoundException.class, () -> orderService.processPaymentCompleted(event));
+    }
+
+    @Test
+    public void processPaymentFailed_noOrderExists() {
+        var event = new PaymentFailedEvent(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID()
+        );
+        assertThrows(OrderNotFoundException.class, () -> orderService.processPaymentFailed(event));
+    }
+
+    @Test
+    public void createOrder_processPaymentCompleted() {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -73,26 +94,28 @@ public class OrderServiceTest {
                 created.id(),
                 created.amount()
         );
-        orderService.processPaymentCompleted(event);
-
-        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.COMPLETED));
+        assertDoesNotThrow(() -> {
+            orderService.processPaymentCompleted(event);
+            getAndAssertOrder(created.id(), OrderStatus.COMPLETED);
+        });
     }
 
     @Test
-    public void createOrder_paymentFailed() {
+    public void createOrder_processPaymentFailed() {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );
-        orderService.processPaymentFailed(event);
-
-        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.CANCELLED));
+        assertDoesNotThrow(() -> {
+            orderService.processPaymentFailed(event);
+            getAndAssertOrder(created.id(), OrderStatus.CANCELLED);
+        });
     }
 
     @Test
-    public void createOrder_paymentCompleted_deduplicationWorks() {
+    public void createOrder_processPaymentCompleted_deduplicationWorks() {
         var created = createAndAssertOrder();
         var event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -100,24 +123,26 @@ public class OrderServiceTest {
                 created.id(),
                 created.amount()
         );
-        orderService.processPaymentCompleted(event);
-        orderService.processPaymentCompleted(event);
-
-        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.COMPLETED));
+        assertDoesNotThrow(() -> {
+            orderService.processPaymentCompleted(event);
+            orderService.processPaymentCompleted(event);
+            getAndAssertOrder(created.id(), OrderStatus.COMPLETED);
+        });
     }
 
     @Test
-    public void createOrder_paymentFailed_deduplicationWorks() {
+    public void createOrder_processPaymentFailed_deduplicationWorks() {
         var created = createAndAssertOrder();
         var event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
         );
-        orderService.processPaymentFailed(event);
-        orderService.processPaymentFailed(event);
-
-        assertDoesNotThrow(() -> getAndAssertOrder(created.id(), OrderStatus.CANCELLED));
+        assertDoesNotThrow(() -> {
+            orderService.processPaymentFailed(event);
+            orderService.processPaymentFailed(event);
+            getAndAssertOrder(created.id(), OrderStatus.CANCELLED);
+        });
     }
 
     /**

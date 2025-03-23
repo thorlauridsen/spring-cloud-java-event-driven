@@ -36,7 +36,11 @@ public class PaymentCompletedConsumer extends EventConsumer<PaymentCompletedEven
      */
     @Override
     protected void processEvent(PaymentCompletedEvent event) {
-        orderService.processPaymentCompleted(event);
+        try {
+            orderService.processPaymentCompleted(event);
+        } catch (Exception ex) {
+            logger.error("Failed to process payment failed event: {} {}", event.getEventType(), event.getId(), ex);
+        }
     }
 
     /**
