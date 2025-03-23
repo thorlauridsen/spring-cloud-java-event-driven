@@ -7,7 +7,6 @@ plugins {
 }
 
 dependencies {
-
     // Spring Boot dependencies
     implementation(local.springboot.starter)
 
