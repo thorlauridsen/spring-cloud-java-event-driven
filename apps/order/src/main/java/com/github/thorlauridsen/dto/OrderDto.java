@@ -5,13 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.thorlauridsen.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
  * Data transfer object for an order.
  *
+ * @param id      UUID of the order.
+ * @param time    time order was created in database.
+ * @param status  current order status.
  * @param product description of product.
  * @param amount  amount to be paid.
  */
