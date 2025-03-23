@@ -7,6 +7,9 @@ plugins {
 }
 
 dependencies {
+    // The event subproject needs access to the model subproject
+    implementation(projects.model)
+
     // Spring Boot dependencies
     implementation(local.springboot.starter)
 

@@ -1,5 +1,6 @@
 package com.github.thorlauridsen.deduplication;
 
+import com.github.thorlauridsen.model.event.ProcessedEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,10 +33,36 @@ public class ProcessedEventEntity {
     /**
      * Constructor for ProcessedEventEntity.
      *
-     * @param eventId UUID of the event.
+     * @param eventId     UUID of the processed event.
+     * @param processedAt time the event was processed.
      */
-    public ProcessedEventEntity(UUID eventId) {
+    private ProcessedEventEntity(
+            UUID eventId,
+            OffsetDateTime processedAt
+    ) {
         this.eventId = eventId;
-        this.processedAt = OffsetDateTime.now();
+        this.processedAt = processedAt;
+    }
+
+    /**
+     * Method to convert {@link ProcessedEventEntity} to {@link ProcessedEvent} model.
+     *
+     * @return {@link ProcessedEvent}.
+     */
+    public ProcessedEvent toModel() {
+        return new ProcessedEvent(eventId, processedAt);
+    }
+
+    /**
+     * Method to convert {@link ProcessedEvent} model to {@link ProcessedEventEntity}.
+     *
+     * @param processedEvent {@link ProcessedEvent} model.
+     * @return {@link ProcessedEventEntity}.
+     */
+    public static ProcessedEventEntity fromModel(ProcessedEvent processedEvent) {
+        return new ProcessedEventEntity(
+                processedEvent.eventId(),
+                processedEvent.processedAt()
+        );
     }
 }

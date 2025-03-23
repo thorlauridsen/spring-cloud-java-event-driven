@@ -1,14 +1,13 @@
 package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.enumeration.OrderStatus;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.Order;
-import com.github.thorlauridsen.outbox.OutboxRepoFacade;
+import com.github.thorlauridsen.model.event.OrderCreatedEvent;
+import com.github.thorlauridsen.outbox.IOutboxEventRepo;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Service class for the order outbox.
@@ -18,14 +17,14 @@ import java.util.UUID;
 public class OrderOutboxService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final OutboxRepoFacade outboxRepo;
+    private final IOutboxEventRepo outboxRepo;
 
     /**
      * Constructor for OrderOutboxService.
      *
-     * @param outboxRepo {@link OutboxRepoFacade} for interacting with the outbox table.
+     * @param outboxRepo {@link IOutboxEventRepo} for interacting with the outbox table.
      */
-    public OrderOutboxService(OutboxRepoFacade outboxRepo) {
+    public OrderOutboxService(IOutboxEventRepo outboxRepo) {
         this.outboxRepo = outboxRepo;
     }
 

@@ -1,8 +1,6 @@
-package com.github.thorlauridsen.event;
+package com.github.thorlauridsen.model.event;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.github.thorlauridsen.enumeration.EventType;
 import java.util.UUID;
 
 /**
@@ -20,11 +18,10 @@ public class PaymentFailedEvent extends BaseEvent {
      * @param paymentId UUID of the payment.
      * @param orderId   UUID of the order.
      */
-    @JsonCreator
     public PaymentFailedEvent(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("paymentId") UUID paymentId,
-            @JsonProperty("orderId") UUID orderId
+            UUID id,
+            UUID paymentId,
+            UUID orderId
     ) {
         super(id, EventType.PAYMENT_FAILED);
         this.paymentId = paymentId;
@@ -32,18 +29,7 @@ public class PaymentFailedEvent extends BaseEvent {
     }
 
     /**
-     * Get the UUID of the payment.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the payment.
-     */
-    public UUID getPaymentId() {
-        return paymentId;
-    }
-
-    /**
      * Get the UUID of the order.
-     * This getter is used by Jackson to serialize the event.
      *
      * @return UUID of the order.
      */

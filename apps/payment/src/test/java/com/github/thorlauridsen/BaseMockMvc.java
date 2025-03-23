@@ -23,22 +23,6 @@ public class BaseMockMvc {
     }
 
     /**
-     * Mock an HTTP POST request.
-     *
-     * @param jsonBody JSON body as a string.
-     * @param postUrl  The URL to send an HTTP POST request to.
-     * @return {@link MockHttpServletResponse} response.
-     */
-    public MockHttpServletResponse mockPost(String jsonBody, String postUrl) throws Exception {
-        return mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post(postUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonBody)
-        ).andReturn().getResponse();
-    }
-
-    /**
      * Mock an HTTP GET request.
      *
      * @param getUrl The URL to send an HTTP GET request to.

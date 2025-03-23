@@ -1,13 +1,12 @@
 package com.github.thorlauridsen.outbox;
 
-import com.github.thorlauridsen.event.EventType;
+import com.github.thorlauridsen.enumeration.EventType;
+import com.github.thorlauridsen.model.event.OutboxEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -25,7 +24,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "outbox")
-public class OutboxEntity {
+public class OutboxEventEntity {
 
     /**
      * Unique identifier for the event.
@@ -59,28 +58,13 @@ public class OutboxEntity {
     /**
      * Empty default constructor required by JPA.
      */
-    protected OutboxEntity() {
-    }
-
-    /**
-     * Constructor for creating a new instance of OutboxEntity.
-     * This contains only the necessary fields for creating
-     * a new instance to be saved in the database.
-     */
-    public OutboxEntity(
-            UUID eventId,
-            EventType eventType,
-            String payload
-    ) {
-        this.eventId = eventId;
-        this.eventType = eventType;
-        this.payload = payload;
+    protected OutboxEventEntity() {
     }
 
     /**
      * Constructor for OutboxEntity.
      */
-    public OutboxEntity(
+    public OutboxEventEntity(
             UUID eventId,
             EventType eventType,
             String payload,
@@ -98,11 +82,11 @@ public class OutboxEntity {
      * Static method to set processed to true.
      * This method is provided to increase immutability.
      *
-     * @param outbox {@link OutboxEntity}
-     * @return {@link OutboxEntity} with processed as true.
+     * @param outbox {@link OutboxEventEntity}
+     * @return {@link OutboxEventEntity} with processed as true.
      */
-    public static OutboxEntity markProcessed(OutboxEntity outbox) {
-        return new OutboxEntity(
+    public static OutboxEventEntity markProcessed(OutboxEventEntity outbox) {
+        return new OutboxEventEntity(
                 outbox.getEventId(),
                 outbox.getEventType(),
                 outbox.getPayload(),
@@ -111,18 +95,69 @@ public class OutboxEntity {
         );
     }
 
+    /**
+     * Convert the entity to a model.
+     *
+     * @return {@link OutboxEvent} model.
+     */
+    public OutboxEvent toModel() {
+        return new OutboxEvent(
+                eventId,
+                eventType,
+                payload,
+                createdAt,
+                processed
+        );
+    }
+
+    /**
+     * Convert a model to an entity.
+     *
+     * @param outboxEvent {@link OutboxEvent} model.
+     * @return {@link OutboxEventEntity} entity.
+     */
+    public static OutboxEventEntity fromModel(OutboxEvent outboxEvent) {
+        return new OutboxEventEntity(
+                outboxEvent.eventId(),
+                outboxEvent.eventType(),
+                outboxEvent.payload(),
+                outboxEvent.createdAt(),
+                outboxEvent.processed()
+        );
+    }
+
+    /**
+     * Get the event ID.
+     *
+     * @return {@link UUID} event ID.
+     */
     public UUID getEventId() {
         return eventId;
     }
 
+    /**
+     * Get the event type.
+     *
+     * @return {@link EventType} event type.
+     */
     public EventType getEventType() {
         return eventType;
     }
 
+    /**
+     * Get the event JSON payload.
+     *
+     * @return JSON string payload of the event.
+     */
     public String getPayload() {
         return payload;
     }
 
+    /**
+     * Get the created at timestamp.
+     *
+     * @return {@link OffsetDateTime} created at timestamp.
+     */
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }

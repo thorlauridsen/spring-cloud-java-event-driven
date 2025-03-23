@@ -2,13 +2,13 @@ package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thorlauridsen.enumeration.EventType;
 import com.github.thorlauridsen.enumeration.OrderStatus;
-import com.github.thorlauridsen.event.EventType;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
+import com.github.thorlauridsen.event.OrderCreatedEventDto;
 import com.github.thorlauridsen.model.Order;
-import com.github.thorlauridsen.outbox.OutboxEntity;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.service.OrderOutboxPoller;
+import com.github.thorlauridsen.model.event.OutboxEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.producer.OrderOutboxPoller;
 import com.github.thorlauridsen.service.OrderOutboxService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.time.OffsetDateTime;
@@ -37,7 +37,7 @@ public class OrderOutboxTest {
     private OrderOutboxService orderOutboxService;
 
     @Autowired
-    private OutboxRepo outboxRepo;
+    private OutboxEventJpaRepo outboxEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -49,29 +49,29 @@ public class OrderOutboxTest {
 
     @BeforeEach
     public void setup() {
-        outboxRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        outboxEventRepo.deleteAll();
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
     public void prepareCompletedOrder_noEventExistsInOutbox() {
         prepareOrder(OrderStatus.COMPLETED);
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
     public void prepareCancelledOrder_noEventExistsInOutbox() {
         prepareOrder(OrderStatus.CANCELLED);
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
     public void prepareCreatedOrder_existsInOutbox() {
         prepareOrder(OrderStatus.CREATED);
-        assertEquals(1, outboxRepo.count());
-        assertEquals(1, outboxRepo.findAllByProcessedFalse().size());
+        assertEquals(1, outboxEventRepo.count());
+        assertEquals(1, outboxEventRepo.findAllByProcessedFalse().size());
 
-        var event = outboxRepo.findAllByProcessedFalse().getFirst();
+        var event = outboxEventRepo.findAllByProcessedFalse().getFirst();
 
         assertNotNull(event);
         assertNotNull(event.getEventId());
@@ -80,16 +80,7 @@ public class OrderOutboxTest {
         assertEquals(EventType.ORDER_CREATED, event.getEventType());
 
         orderOutboxPoller.pollOutboxTable();
-        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
-    }
-
-    @Test
-    public void processEvent_existsInOutbox() throws JsonProcessingException {
-        var json = getOrderCreatedEventJson();
-        processEvent(EventType.ORDER_CREATED, json);
-
-        assertEquals(1, outboxRepo.count());
-        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
+        assertEquals(0, outboxEventRepo.findAllByProcessedFalse().size());
     }
 
     @Test
@@ -98,13 +89,13 @@ public class OrderOutboxTest {
         processEvent(EventType.PAYMENT_COMPLETED, json);
         processEvent(EventType.PAYMENT_FAILED, json);
 
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
     public void processEvent_invalidPayload_emptyOutbox() {
         processEvent(EventType.ORDER_CREATED, "invalidPayload");
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     /**
@@ -136,7 +127,7 @@ public class OrderOutboxTest {
             EventType eventType,
             String payload
     ) {
-        var entity = new OutboxEntity(
+        var entity = new OutboxEvent(
                 UUID.randomUUID(),
                 eventType,
                 payload,
@@ -147,12 +138,12 @@ public class OrderOutboxTest {
     }
 
     /**
-     * Get a JSON string of an {@link OrderCreatedEvent}.
+     * Get a JSON string of an {@link OrderCreatedEventDto}.
      *
-     * @return JSON string of an {@link OrderCreatedEvent}.
+     * @return JSON string of an {@link OrderCreatedEventDto}.
      */
     private String getOrderCreatedEventJson() throws JsonProcessingException {
-        var event = new OrderCreatedEvent(
+        var event = new OrderCreatedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "Computer",

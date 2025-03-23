@@ -1,11 +1,11 @@
 package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
+import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
 import com.github.thorlauridsen.dto.PaymentDto;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.persistence.PaymentRepo;
+import com.github.thorlauridsen.model.event.OrderCreatedEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.persistence.PaymentJpaRepo;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class PaymentControllerTest extends BaseMockMvc {
 
     private final ObjectMapper objectMapper;
-    private final OutboxRepo outboxRepo;
-    private final PaymentRepo paymentRepo;
+    private final OutboxEventJpaRepo outboxEventRepo;
+    private final PaymentJpaRepo paymentRepo;
     private final PaymentService paymentService;
-    private final ProcessedEventRepo processedEventRepo;
+    private final ProcessedEventJpaRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -42,14 +42,14 @@ public class PaymentControllerTest extends BaseMockMvc {
     public PaymentControllerTest(
             MockMvc mockMvc,
             ObjectMapper objectMapper,
-            OutboxRepo outboxRepo,
-            PaymentRepo paymentRepo,
+            OutboxEventJpaRepo outboxEventRepo,
+            PaymentJpaRepo paymentRepo,
             PaymentService paymentService,
-            ProcessedEventRepo processedEventRepo
+            ProcessedEventJpaRepo processedEventRepo
     ) {
         super(mockMvc);
         this.objectMapper = objectMapper;
-        this.outboxRepo = outboxRepo;
+        this.outboxEventRepo = outboxEventRepo;
         this.paymentRepo = paymentRepo;
         this.paymentService = paymentService;
         this.processedEventRepo = processedEventRepo;
@@ -57,10 +57,10 @@ public class PaymentControllerTest extends BaseMockMvc {
 
     @BeforeEach
     public void setup() {
-        outboxRepo.deleteAll();
+        outboxEventRepo.deleteAll();
         paymentRepo.deleteAll();
         processedEventRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
         assertEquals(0, paymentRepo.count());
         assertEquals(0, processedEventRepo.count());
     }
@@ -92,7 +92,7 @@ public class PaymentControllerTest extends BaseMockMvc {
         assertEquals(event.getOrderId(), payment.orderId());
         assertEquals(199.0, payment.amount());
 
-        assertEquals(1, outboxRepo.count());
+        assertEquals(1, outboxEventRepo.count());
         assertEquals(1, paymentRepo.count());
         assertEquals(1, processedEventRepo.count());
     }

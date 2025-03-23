@@ -1,13 +1,11 @@
-package com.github.thorlauridsen.service;
+package com.github.thorlauridsen.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
+import com.github.thorlauridsen.event.PaymentCompletedEventDto;
+import com.github.thorlauridsen.event.PaymentFailedEventDto;
+import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.BaseOutboxPoller;
-import com.github.thorlauridsen.outbox.OutboxEntity;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.producer.PaymentCompletedProducer;
-import com.github.thorlauridsen.producer.PaymentFailedProducer;
+import com.github.thorlauridsen.outbox.IOutboxEventRepo;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,17 +25,17 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
      * Constructor for PaymentOutboxPoller.
      *
      * @param objectMapper             FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
-     * @param outboxRepo               JpaRepository {@link OutboxRepo} for directly interacting with the outbox table.
+     * @param outboxEventRepo          {@link IOutboxEventRepo} for interacting with the outbox table.
      * @param paymentCompletedProducer {@link PaymentCompletedProducer} for publishing payment completed events.
      * @param paymentFailedProducer    {@link PaymentFailedProducer} for publishing payment failed events.
      */
     public PaymentOutboxPoller(
             ObjectMapper objectMapper,
-            OutboxRepo outboxRepo,
+            IOutboxEventRepo outboxEventRepo,
             PaymentCompletedProducer paymentCompletedProducer,
             PaymentFailedProducer paymentFailedProducer
     ) {
-        super(objectMapper, outboxRepo);
+        super(objectMapper, outboxEventRepo);
         this.paymentCompletedProducer = paymentCompletedProducer;
         this.paymentFailedProducer = paymentFailedProducer;
     }
@@ -46,32 +44,31 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
      * Process the event from the outbox table.
      * This will publish the event to the appropriate topic.
      *
-     * @param event {@link OutboxEntity} to process.
+     * @param event {@link OutboxEvent} to process.
      */
     @Override
-    public void process(OutboxEntity event) {
+    public void process(OutboxEvent event) {
         try {
-            logger.info("Publishing payment event: {} - {}", event.getEventType(), event.getPayload());
+            logger.info("Publishing payment event: {} - {}", event.eventType(), event.payload());
 
-            switch (event.getEventType()) {
+            switch (event.eventType()) {
                 case PAYMENT_COMPLETED:
-                    var completedEvent = objectMapper.readValue(event.getPayload(), PaymentCompletedEvent.class);
+                    var completedEvent = objectMapper.readValue(event.payload(), PaymentCompletedEventDto.class);
                     paymentCompletedProducer.publish(completedEvent);
                     break;
                 case PAYMENT_FAILED:
-                    var failedEvent = objectMapper.readValue(event.getPayload(), PaymentFailedEvent.class);
+                    var failedEvent = objectMapper.readValue(event.payload(), PaymentFailedEventDto.class);
                     paymentFailedProducer.publish(failedEvent);
                     break;
                 default:
-                    logger.warn("Invalid payment event type: {}", event.getEventType());
+                    logger.warn("Invalid payment event type: {}", event.eventType());
                     return;
             }
-            var updated = OutboxEntity.markProcessed(event);
-            outboxRepo.save(updated);
-            logger.info("Successfully processed payment outbox event: {} {}", event.getEventType(), event.getEventId());
+            outboxEventRepo.markAsProcessed(event.eventId());
+            logger.info("Successfully processed payment outbox event: {} {}", event.eventType(), event.eventId());
 
         } catch (Exception e) {
-            logger.error("Failed to process payment event: {}", event.getEventId(), e);
+            logger.error("Failed to process payment event: {}", event.eventId(), e);
         }
     }
 }

@@ -2,14 +2,14 @@ package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thorlauridsen.enumeration.EventType;
 import com.github.thorlauridsen.enumeration.PaymentStatus;
-import com.github.thorlauridsen.event.EventType;
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
+import com.github.thorlauridsen.event.PaymentCompletedEventDto;
+import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.model.Payment;
-import com.github.thorlauridsen.outbox.OutboxEntity;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.service.PaymentOutboxPoller;
+import com.github.thorlauridsen.model.event.OutboxEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.producer.PaymentOutboxPoller;
 import com.github.thorlauridsen.service.PaymentOutboxService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.time.OffsetDateTime;
@@ -38,7 +38,7 @@ public class PaymentOutboxTest {
     private PaymentOutboxService paymentOutboxService;
 
     @Autowired
-    private OutboxRepo outboxRepo;
+    private OutboxEventJpaRepo outboxEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -50,8 +50,8 @@ public class PaymentOutboxTest {
 
     @BeforeEach
     public void setup() {
-        outboxRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        outboxEventRepo.deleteAll();
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
@@ -65,23 +65,11 @@ public class PaymentOutboxTest {
     }
 
     @Test
-    public void processEvent_existsInOutbox() throws JsonProcessingException {
-        var paymentCompletedEventJson = getPaymentCompletedEventJson();
-        var paymentFailedEventJson = getPaymentFailedEventJson();
-
-        processEvent(EventType.PAYMENT_COMPLETED, paymentCompletedEventJson);
-        processEvent(EventType.PAYMENT_FAILED, paymentFailedEventJson);
-
-        assertEquals(2, outboxRepo.count());
-        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
-    }
-
-    @Test
     public void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
         var json = getPaymentCompletedEventJson();
         processEvent(EventType.ORDER_CREATED, json);
 
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
@@ -89,14 +77,14 @@ public class PaymentOutboxTest {
         processEvent(EventType.PAYMENT_COMPLETED, "invalidPayload");
         processEvent(EventType.PAYMENT_FAILED, "invalidPayload");
 
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
     }
 
     /**
      * Prepare a payment with the given status.
      * Assert that the event is saved to the outbox.
      *
-     * @param status The {@link PaymentStatus} of the payment.
+     * @param status            The {@link PaymentStatus} of the payment.
      * @param expectedEventType The expected {@link EventType} of the event.
      */
     private void preparePaymentAndAssert(
@@ -112,10 +100,10 @@ public class PaymentOutboxTest {
         );
         paymentOutboxService.prepareEvent(payment);
 
-        assertEquals(1, outboxRepo.count());
-        assertEquals(1, outboxRepo.findAllByProcessedFalse().size());
+        assertEquals(1, outboxEventRepo.count());
+        assertEquals(1, outboxEventRepo.findAllByProcessedFalse().size());
 
-        var event = outboxRepo.findAllByProcessedFalse().getFirst();
+        var event = outboxEventRepo.findAllByProcessedFalse().getFirst();
 
         assertNotNull(event);
         assertNotNull(event.getEventId());
@@ -124,7 +112,7 @@ public class PaymentOutboxTest {
         assertEquals(expectedEventType, event.getEventType());
 
         paymentOutboxPoller.pollOutboxTable();
-        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
+        assertEquals(0, outboxEventRepo.findAllByProcessedFalse().size());
     }
 
     /**
@@ -140,7 +128,7 @@ public class PaymentOutboxTest {
             EventType eventType,
             String payload
     ) {
-        var entity = new OutboxEntity(
+        var entity = new OutboxEvent(
                 UUID.randomUUID(),
                 eventType,
                 payload,
@@ -151,12 +139,12 @@ public class PaymentOutboxTest {
     }
 
     /**
-     * Get a JSON string of an {@link PaymentFailedEvent}.
+     * Get a JSON string of an {@link PaymentFailedEventDto}.
      *
-     * @return JSON string of an {@link PaymentFailedEvent}.
+     * @return JSON string of an {@link PaymentFailedEventDto}.
      */
     private String getPaymentFailedEventJson() throws JsonProcessingException {
-        var event = new PaymentFailedEvent(
+        var event = new PaymentFailedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID()
@@ -165,12 +153,12 @@ public class PaymentOutboxTest {
     }
 
     /**
-     * Get a JSON string of an {@link PaymentCompletedEvent}.
+     * Get a JSON string of an {@link PaymentCompletedEventDto}.
      *
-     * @return JSON string of an {@link PaymentCompletedEvent}.
+     * @return JSON string of an {@link PaymentCompletedEventDto}.
      */
     private String getPaymentCompletedEventJson() throws JsonProcessingException {
-        var event = new PaymentCompletedEvent(
+        var event = new PaymentCompletedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID(),

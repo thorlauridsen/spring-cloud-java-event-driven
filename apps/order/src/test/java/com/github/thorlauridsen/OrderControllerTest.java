@@ -1,17 +1,18 @@
 package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
+import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
 import com.github.thorlauridsen.dto.OrderCreateDto;
 import com.github.thorlauridsen.dto.OrderDto;
 import com.github.thorlauridsen.enumeration.OrderStatus;
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.Order;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.persistence.OrderRepo;
+import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
+import com.github.thorlauridsen.model.event.PaymentFailedEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.persistence.OrderJpaRepo;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sns.core.SnsTemplate;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.UUID;
 
 import static com.github.thorlauridsen.controller.BaseEndpoint.ORDER_BASE_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,9 +31,9 @@ public class OrderControllerTest extends BaseMockMvc {
 
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
-    private final OrderRepo orderRepo;
-    private final OutboxRepo outboxRepo;
-    private final ProcessedEventRepo processedEventRepo;
+    private final OrderJpaRepo orderRepo;
+    private final OutboxEventJpaRepo outboxEventRepo;
+    private final ProcessedEventJpaRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -49,24 +48,24 @@ public class OrderControllerTest extends BaseMockMvc {
             MockMvc mockMvc,
             ObjectMapper objectMapper,
             OrderService orderService,
-            OrderRepo orderRepo,
-            OutboxRepo outboxRepo,
-            ProcessedEventRepo processedEventRepo
+            OrderJpaRepo orderRepo,
+            OutboxEventJpaRepo outboxEventRepo,
+            ProcessedEventJpaRepo processedEventRepo
     ) {
         super(mockMvc);
         this.objectMapper = objectMapper;
         this.orderService = orderService;
         this.orderRepo = orderRepo;
-        this.outboxRepo = outboxRepo;
+        this.outboxEventRepo = outboxEventRepo;
         this.processedEventRepo = processedEventRepo;
     }
 
     @BeforeEach
     public void setup() {
         orderRepo.deleteAll();
-        outboxRepo.deleteAll();
+        outboxEventRepo.deleteAll();
         processedEventRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
         assertEquals(0, orderRepo.count());
         assertEquals(0, processedEventRepo.count());
     }
@@ -128,7 +127,7 @@ public class OrderControllerTest extends BaseMockMvc {
         assertEquals(199.0, created.amount());
 
         assertEquals(1, orderRepo.count());
-        assertEquals(1, outboxRepo.count());
+        assertEquals(1, outboxEventRepo.count());
 
         var orderEntity = orderRepo.findById(created.id());
         assertTrue(orderEntity.isPresent());
