@@ -68,7 +68,7 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
             }
             var updated = OutboxEntity.markProcessed(event);
             outboxRepo.save(updated);
-            logger.info("Successfully processed payment outbox event: {}", event.getId());
+            logger.info("Successfully processed payment outbox event: {} {}", event.getEventType(), event.getId());
 
         } catch (Exception e) {
             logger.error("Failed to process payment event: {}", event.getId(), e);
