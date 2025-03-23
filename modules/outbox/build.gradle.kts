@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-	// The outbox subproject needs access to the event subproject
-	implementation(projects.event)
+	// The outbox subproject needs access to the model subproject
+	implementation(projects.model)
 
 	// Spring Boot dependencies
 	implementation(local.springboot.starter.jpa)

@@ -1,6 +1,7 @@
 package com.github.thorlauridsen.outbox;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thorlauridsen.model.event.OutboxEvent;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +25,20 @@ public abstract class BaseOutboxPoller {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected final ObjectMapper objectMapper;
-    protected final OutboxRepo outboxRepo;
+    protected final IOutboxEventRepo outboxEventRepo;
 
     /**
      * Constructor for BaseOutboxPoller.
      *
-     * @param objectMapper FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
-     * @param outboxRepo   JpaRepository {@link OutboxRepo} for directly interacting with the outbox table.
+     * @param objectMapper    FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
+     * @param outboxEventRepo {@link IOutboxEventRepo} for interacting with the outbox table.
      */
     public BaseOutboxPoller(
             ObjectMapper objectMapper,
-            OutboxRepo outboxRepo
+            IOutboxEventRepo outboxEventRepo
     ) {
         this.objectMapper = objectMapper;
-        this.outboxRepo = outboxRepo;
+        this.outboxEventRepo = outboxEventRepo;
     }
 
     /**
@@ -47,14 +48,14 @@ public abstract class BaseOutboxPoller {
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void pollOutboxTable() {
-        var events = outboxRepo.findAllByProcessedFalse();
+        var events = outboxEventRepo.findAllByProcessedFalse();
 
         if (events.isEmpty()) {
             return;
         }
         logger.info("Found {} unprocessed events. Processing...", events.size());
 
-        for (OutboxEntity event : events) {
+        for (OutboxEvent event : events) {
             process(event);
         }
     }
@@ -63,7 +64,7 @@ public abstract class BaseOutboxPoller {
      * Abstract method for processing an unprocessed event.
      * This method must be implemented for any class that extends BaseOutboxPoller.
      *
-     * @param event {@link OutboxEntity} event to be processed.
+     * @param event {@link OutboxEvent} event to be processed.
      */
-    protected abstract void process(OutboxEntity event);
+    protected abstract void process(OutboxEvent event);
 }

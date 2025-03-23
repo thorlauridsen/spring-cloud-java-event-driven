@@ -1,6 +1,7 @@
 dependencies {
-	// The consumer subproject needs access to the event subproject
+	// The consumer subproject needs access to the event and model subprojects
 	implementation(projects.event)
+	implementation(projects.model)
 
 	// Spring Cloud dependencies for AWS SQS
 	implementation(local.aws.spring.cloud.sqs)

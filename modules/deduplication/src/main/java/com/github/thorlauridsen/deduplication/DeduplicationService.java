@@ -1,5 +1,7 @@
 package com.github.thorlauridsen.deduplication;
 
+import com.github.thorlauridsen.model.event.ProcessedEvent;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -10,14 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeduplicationService {
 
-    private final ProcessedEventRepo processedEventRepo;
+    private final IProcessedEventRepo processedEventRepo;
 
     /**
      * Constructor for DeduplicationService.
      *
-     * @param processedEventRepo {@link ProcessedEventRepo} for checking if an event has already been processed.
+     * @param processedEventRepo {@link IProcessedEventRepo} for checking if an event has already been processed.
      */
-    public DeduplicationService(ProcessedEventRepo processedEventRepo) {
+    public DeduplicationService(IProcessedEventRepo processedEventRepo) {
         this.processedEventRepo = processedEventRepo;
     }
 
@@ -37,7 +39,10 @@ public class DeduplicationService {
      * @param eventId UUID of the event to record.
      */
     public void record(UUID eventId) {
-        var processedEvent = new ProcessedEventEntity(eventId);
+        var processedEvent = new ProcessedEvent(
+                eventId,
+                OffsetDateTime.now()
+        );
         processedEventRepo.save(processedEvent);
     }
 }

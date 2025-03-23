@@ -1,12 +1,11 @@
-package com.github.thorlauridsen.service;
+package com.github.thorlauridsen.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.event.EventType;
-import com.github.thorlauridsen.event.OrderCreatedEvent;
+import com.github.thorlauridsen.enumeration.EventType;
+import com.github.thorlauridsen.event.OrderCreatedEventDto;
+import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.BaseOutboxPoller;
-import com.github.thorlauridsen.outbox.OutboxEntity;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.producer.OrderCreatedProducer;
+import com.github.thorlauridsen.outbox.IOutboxEventRepo;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,14 +25,14 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
      *
      * @param objectMapper         FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
      * @param orderCreatedProducer {@link OrderCreatedProducer} to publish the order created event.
-     * @param outboxRepo           JpaRepository {@link OutboxRepo} for directly interacting with the outbox table.
+     * @param outboxEventRepo      {@link IOutboxEventRepo} for interacting with the outbox table.
      */
     public OrderOutboxPoller(
             ObjectMapper objectMapper,
             OrderCreatedProducer orderCreatedProducer,
-            OutboxRepo outboxRepo
+            IOutboxEventRepo outboxEventRepo
     ) {
-        super(objectMapper, outboxRepo);
+        super(objectMapper, outboxEventRepo);
         this.orderCreatedProducer = orderCreatedProducer;
     }
 
@@ -41,26 +40,25 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
      * Process the event from the outbox table.
      * This will publish the event to the appropriate topic.
      *
-     * @param event {@link OutboxEntity} to process.
+     * @param event {@link OutboxEvent} to process.
      */
     @Override
-    public void process(OutboxEntity event) {
+    public void process(OutboxEvent event) {
         try {
-            logger.info("Publishing order event: {} - {}", event.getEventType(), event.getPayload());
+            logger.info("Publishing order event: {} - {}", event.eventType(), event.payload());
 
-            if (event.getEventType() != EventType.ORDER_CREATED) {
-                logger.warn("Invalid order event type: {}", event.getEventType());
+            if (event.eventType() != EventType.ORDER_CREATED) {
+                logger.warn("Invalid order event type: {}", event.eventType());
                 return;
             }
-            var createdEvent = objectMapper.readValue(event.getPayload(), OrderCreatedEvent.class);
+            var createdEvent = objectMapper.readValue(event.payload(), OrderCreatedEventDto.class);
             orderCreatedProducer.publish(createdEvent);
 
-            var updated = OutboxEntity.markProcessed(event);
-            outboxRepo.save(updated);
-            logger.info("Successfully processed order outbox event: {} {}", event.getEventType(), event.getEventId());
+            outboxEventRepo.markAsProcessed(event.eventId());
+            logger.info("Successfully processed order outbox event: {} {}", event.eventType(), event.eventId());
 
         } catch (Exception e) {
-            logger.error("Failed to process order event: {}", event.getEventId(), e);
+            logger.error("Failed to process order event: {}", event.eventId(), e);
         }
     }
 }

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param type  Type of the attribute.
  * @param value Value of the attribute.
  */
-public record SnsMessageAttribute(
+public record SnsMessageAttributeDto(
         @JsonProperty("Type") String type,
         @JsonProperty("Value") String value
 ) {

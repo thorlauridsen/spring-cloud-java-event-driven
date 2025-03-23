@@ -1,8 +1,7 @@
-package com.github.thorlauridsen.event;
+package com.github.thorlauridsen.enumeration;
 
 /**
  * Enum representing the various types of events.
- *
  */
 public enum EventType {
     ORDER_CREATED,

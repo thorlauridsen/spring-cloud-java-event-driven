@@ -1,14 +1,14 @@
 package com.github.thorlauridsen;
 
-import com.github.thorlauridsen.deduplication.ProcessedEventRepo;
+import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
 import com.github.thorlauridsen.enumeration.OrderStatus;
-import com.github.thorlauridsen.event.PaymentCompletedEvent;
-import com.github.thorlauridsen.event.PaymentFailedEvent;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
-import com.github.thorlauridsen.outbox.OutboxRepo;
-import com.github.thorlauridsen.persistence.OrderRepo;
+import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
+import com.github.thorlauridsen.model.event.PaymentFailedEvent;
+import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
+import com.github.thorlauridsen.persistence.OrderJpaRepo;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
@@ -33,13 +33,13 @@ public class OrderServiceTest {
     private OrderService orderService;
 
     @Autowired
-    private OrderRepo orderRepo;
+    private OrderJpaRepo orderRepo;
 
     @Autowired
-    private OutboxRepo outboxRepo;
+    private OutboxEventJpaRepo outboxEventRepo;
 
     @Autowired
-    private ProcessedEventRepo processedEventRepo;
+    private ProcessedEventJpaRepo processedEventRepo;
 
     /**
      * Mocked SnsTemplate for testing.
@@ -52,9 +52,9 @@ public class OrderServiceTest {
     @BeforeEach
     public void setup() {
         orderRepo.deleteAll();
-        outboxRepo.deleteAll();
+        outboxEventRepo.deleteAll();
         processedEventRepo.deleteAll();
-        assertEquals(0, outboxRepo.count());
+        assertEquals(0, outboxEventRepo.count());
         assertEquals(0, orderRepo.count());
         assertEquals(0, processedEventRepo.count());
     }
@@ -164,7 +164,7 @@ public class OrderServiceTest {
         assertEquals(199.0, created.amount());
 
         assertEquals(1, orderRepo.count());
-        assertEquals(1, outboxRepo.count());
+        assertEquals(1, outboxEventRepo.count());
 
         var orderEntity = orderRepo.findById(created.id());
         assertTrue(orderEntity.isPresent());
