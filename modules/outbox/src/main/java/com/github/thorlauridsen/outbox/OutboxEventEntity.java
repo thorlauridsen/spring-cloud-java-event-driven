@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.outbox;
 
-import com.github.thorlauridsen.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.github.thorlauridsen.enumeration;
+package com.github.thorlauridsen.model.enumeration;
 
 /**
  * Enum representing the various types of events.

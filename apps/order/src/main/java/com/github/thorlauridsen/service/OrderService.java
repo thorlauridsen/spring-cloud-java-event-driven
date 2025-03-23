@@ -1,7 +1,7 @@
 package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;

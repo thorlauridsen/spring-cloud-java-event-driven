@@ -1,7 +1,7 @@
 package com.github.thorlauridsen;
 
 import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;

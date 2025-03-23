@@ -1,7 +1,7 @@
 package com.github.thorlauridsen.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.event.OrderCreatedEventDto;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.BaseOutboxPoller;

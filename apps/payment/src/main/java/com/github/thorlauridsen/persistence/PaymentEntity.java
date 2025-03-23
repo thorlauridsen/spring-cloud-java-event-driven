@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.persistence;
 
-import com.github.thorlauridsen.enumeration.PaymentStatus;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.model.Payment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

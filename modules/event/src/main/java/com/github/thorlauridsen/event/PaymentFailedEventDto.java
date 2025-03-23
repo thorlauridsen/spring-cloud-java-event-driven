@@ -2,7 +2,7 @@ package com.github.thorlauridsen.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.thorlauridsen.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import java.util.UUID;
 

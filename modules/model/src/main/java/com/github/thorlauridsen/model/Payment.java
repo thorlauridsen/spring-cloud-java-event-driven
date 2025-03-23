@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.model;
 
-import com.github.thorlauridsen.enumeration.PaymentStatus;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

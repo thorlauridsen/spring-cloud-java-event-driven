@@ -2,8 +2,8 @@ package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.enumeration.EventType;
-import com.github.thorlauridsen.enumeration.PaymentStatus;
+import com.github.thorlauridsen.model.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEventDto;
 import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.model.Payment;

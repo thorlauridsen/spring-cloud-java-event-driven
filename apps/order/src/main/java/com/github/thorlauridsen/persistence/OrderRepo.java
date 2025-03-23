@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.persistence;
 
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import java.util.Optional;

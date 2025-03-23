@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.model;
 
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 

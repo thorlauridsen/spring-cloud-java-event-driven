@@ -2,7 +2,7 @@ package com.github.thorlauridsen.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;

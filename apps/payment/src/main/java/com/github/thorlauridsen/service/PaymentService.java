@@ -1,7 +1,7 @@
 package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
-import com.github.thorlauridsen.enumeration.PaymentStatus;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;

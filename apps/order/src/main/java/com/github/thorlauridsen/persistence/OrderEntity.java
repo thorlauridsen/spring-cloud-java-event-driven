@@ -1,6 +1,6 @@
 package com.github.thorlauridsen.persistence;
 
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

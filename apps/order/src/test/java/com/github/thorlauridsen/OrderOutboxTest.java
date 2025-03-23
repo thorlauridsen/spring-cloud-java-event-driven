@@ -2,8 +2,8 @@ package com.github.thorlauridsen;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.enumeration.EventType;
-import com.github.thorlauridsen.enumeration.OrderStatus;
+import com.github.thorlauridsen.model.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.event.OrderCreatedEventDto;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.event.OutboxEvent;
