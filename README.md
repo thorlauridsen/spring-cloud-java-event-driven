@@ -312,6 +312,8 @@ root
 │   │   └─ build.gradle.kts
 │   ├─ event
 │   │   └─ build.gradle.kts
+│   ├─ exception
+│   │   └─ build.gradle.kts
 │   ├─ jackson
 │   │   └─ build.gradle.kts
 │   ├─ model
@@ -363,6 +365,7 @@ This essentially allows us to define this structure:
 order  
 │─ consumer  
 │─ event  
+│─ exception  
 │─ jackson  
 │─ model  
 │─ outbox  
@@ -371,6 +374,7 @@ order
 payment  
 │─ consumer  
 │─ event  
+│─ exception  
 │─ jackson  
 │─ model  
 │─ outbox  
@@ -388,7 +392,7 @@ event
 outbox  
 └─ event
 
-jackson, model and producer has no dependencies
+exception, jackson, model and producer has no dependencies
 ```
 
 ## Meta
