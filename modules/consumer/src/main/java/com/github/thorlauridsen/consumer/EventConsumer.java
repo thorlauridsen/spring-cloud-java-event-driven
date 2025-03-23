@@ -1,6 +1,7 @@
 package com.github.thorlauridsen.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.thorlauridsen.event.BaseEvent;
 import com.github.thorlauridsen.event.SnsNotification;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import org.slf4j.Logger;
@@ -12,9 +13,9 @@ import java.io.IOException;
  * Abstract class for an event consumer.
  * This contains common logic for all event consumers.
  *
- * @param <T>
+ * @param <T> The type of event to consume.
  */
-public abstract class EventConsumer<T> {
+public abstract class EventConsumer<T extends BaseEvent> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
@@ -38,15 +39,15 @@ public abstract class EventConsumer<T> {
     @SqsListener
     public void listen(String json) {
         try {
-            logger.info("Received JSON: {}", json);
+            logger.debug("Received JSON: {}", json);
 
             var notification = objectMapper.readValue(json, SnsNotification.class);
-            logger.info("Received SNS notification: {}", notification);
+            logger.debug("Received SNS notification: {}", notification);
 
             var eventJson = notification.message();
             T event = objectMapper.readValue(eventJson, getEventClass());
 
-            logger.info("Received event: {}", event);
+            logger.info("Received event: {} {}", event.getEventType(), event.getId());
             processEvent(event);
 
         } catch (IOException e) {
