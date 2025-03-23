@@ -78,6 +78,9 @@ public class OrderOutboxTest {
         assertNotNull(event.getCreatedAt());
         assertNotNull(event.getPayload());
         assertEquals(EventType.ORDER_CREATED, event.getEventType());
+
+        orderOutboxPoller.pollOutboxTable();
+        assertEquals(0, outboxRepo.findAllByProcessedFalse().size());
     }
 
     @Test
