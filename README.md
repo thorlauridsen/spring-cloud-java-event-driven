@@ -197,8 +197,9 @@ This will start the two microservices each using an in-memory H2 database.
 You can also use IntelliJ IDEA to easily run the two services at once.
 
 ### Swagger Documentation
-Once the system is running, navigate to http://localhost:8080/
-to view the Swagger documentation for the **order** service.
+Once the entire system is running, you can view the Swagger documentation at:
+- http://localhost:8080/ for the **order** service
+- http://localhost:8081/ for the **payment** service
 
 ## Technology
 
