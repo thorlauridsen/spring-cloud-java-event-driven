@@ -7,7 +7,7 @@ import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
-import com.github.thorlauridsen.persistence.IOrderRepo;
+import com.github.thorlauridsen.model.repository.IOrderRepo;
 import com.github.thorlauridsen.persistence.OrderRepo;
 import java.util.UUID;
 import org.slf4j.Logger;

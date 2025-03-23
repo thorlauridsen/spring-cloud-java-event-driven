@@ -6,7 +6,7 @@ import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
-import com.github.thorlauridsen.persistence.IPaymentRepo;
+import com.github.thorlauridsen.model.repository.IPaymentRepo;
 import com.github.thorlauridsen.persistence.PaymentRepo;
 import java.util.Random;
 import java.util.UUID;

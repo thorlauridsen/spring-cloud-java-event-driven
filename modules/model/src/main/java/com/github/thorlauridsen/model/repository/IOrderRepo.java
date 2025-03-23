@@ -1,4 +1,4 @@
-package com.github.thorlauridsen.persistence;
+package com.github.thorlauridsen.model.repository;
 
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;

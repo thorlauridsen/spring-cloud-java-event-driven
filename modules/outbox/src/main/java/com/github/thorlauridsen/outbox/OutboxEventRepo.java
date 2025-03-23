@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.model.event.BaseEvent;
 import com.github.thorlauridsen.model.event.OutboxEvent;
+import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;

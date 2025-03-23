@@ -1,6 +1,7 @@
 package com.github.thorlauridsen.deduplication;
 
 import com.github.thorlauridsen.model.event.ProcessedEvent;
+import com.github.thorlauridsen.model.repository.IProcessedEventRepo;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;
 

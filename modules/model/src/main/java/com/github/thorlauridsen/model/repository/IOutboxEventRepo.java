@@ -1,4 +1,4 @@
-package com.github.thorlauridsen.outbox;
+package com.github.thorlauridsen.model.repository;
 
 import com.github.thorlauridsen.model.event.BaseEvent;
 import com.github.thorlauridsen.model.event.OutboxEvent;

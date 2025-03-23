@@ -2,6 +2,7 @@ package com.github.thorlauridsen.persistence;
 
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
+import com.github.thorlauridsen.model.repository.IPaymentRepo;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;

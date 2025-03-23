@@ -5,7 +5,7 @@ import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.event.OrderCreatedEventDto;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.BaseOutboxPoller;
-import com.github.thorlauridsen.outbox.IOutboxEventRepo;
+import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import org.springframework.stereotype.Service;
 
 /**

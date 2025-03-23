@@ -3,7 +3,7 @@ package com.github.thorlauridsen.service;
 import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
-import com.github.thorlauridsen.outbox.IOutboxEventRepo;
+import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

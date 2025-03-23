@@ -3,6 +3,7 @@ package com.github.thorlauridsen.persistence;
 import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
+import com.github.thorlauridsen.model.repository.IOrderRepo;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Repository;

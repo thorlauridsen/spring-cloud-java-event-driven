@@ -2,6 +2,7 @@ package com.github.thorlauridsen.outbox;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.model.event.OutboxEvent;
+import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

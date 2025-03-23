@@ -1,4 +1,4 @@
-package com.github.thorlauridsen.deduplication;
+package com.github.thorlauridsen.model.repository;
 
 import com.github.thorlauridsen.model.event.ProcessedEvent;
 import java.util.UUID;
