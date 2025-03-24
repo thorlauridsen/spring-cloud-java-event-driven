@@ -41,7 +41,7 @@ public class OrderController implements IOrderController {
     }
 
     /**
-     * Get method for order.
+     * Get order given an id.
      * This method will convert the model to a DTO and return it.
      *
      * @param id UUID of the order to retrieve.
