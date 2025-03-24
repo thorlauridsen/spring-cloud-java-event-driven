@@ -47,8 +47,7 @@ public interface IOrderController {
     ResponseEntity<OrderDto> create(@RequestBody OrderCreateDto dto);
 
     /**
-     * Get order by id.
-     * This method returns an order given an id.
+     * Get order given an id.
      *
      * @param id UUID of the order to retrieve.
      * @return {@link ResponseEntity} with {@link OrderDto}.
@@ -56,8 +55,8 @@ public interface IOrderController {
      */
     @GetMapping("/{id}")
     @Operation(
-            summary = "Retrieve an order",
-            description = "Retrieve an order"
+            summary = "Retrieve an order given an id",
+            description = "Retrieve an order given an id"
     )
     @ApiResponse(
             responseCode = "200",
