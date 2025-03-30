@@ -20,7 +20,7 @@ public abstract class BaseEventProducer<T extends BaseEventDto> {
     /**
      * Constructor for EventProducer.
      *
-     * @param snsTemplate The {@link SnsTemplate} to use for producing events.
+     * @param snsTemplate The {@link SnsTemplate} to use for publishing events.
      * @param topicArn    The ARN of the SNS topic to which messages will be sent.
      */
     public BaseEventProducer(
@@ -38,6 +38,6 @@ public abstract class BaseEventProducer<T extends BaseEventDto> {
      */
     public void publish(T event) {
         snsTemplate.convertAndSend(topicArn, event);
-        logger.info("Sent event: {} {}", event.getEventType(), event.getId());
+        logger.info("Published event: {} {}", event.getEventType(), event.getId());
     }
 }
