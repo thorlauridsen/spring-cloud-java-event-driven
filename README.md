@@ -342,10 +342,9 @@ Subprojects located under [modules](modules) are not independently runnable.
 The subprojects are used to structure code into various layers. The **model**
 subproject is the most inner layer and contains domain model classes and this
 subproject knows nothing about any of the other subprojects. The purpose of
-the **persistence** subproject is to manage the code responsible for
-interacting with the database. We can add more non-runnable subprojects
-under [modules](modules) if necessary. This could for example
-be a third-party integration.
+the **deduplication** subproject is to provide functionality for idempotency and 
+deduplication. We can add more non-runnable subprojects under [modules](modules) 
+if necessary.
 
 ---
 
