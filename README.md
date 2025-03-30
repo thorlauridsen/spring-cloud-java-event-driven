@@ -77,6 +77,11 @@ The **order** and **payment** service are part of a **choreography-based saga**.
 Each service is responsible for its own domain, and they communicate through events.
 Once an event is published, the producer does not know how another service might 
 consume and process it. Services simply react to consumed events and publish new events.
+An important thing about this pattern is that every action needs a compensating action 
+if something fails. For example, if the **payment** service fails to complete a payment, 
+it must publish a **PaymentFailedEvent**. The **order** service will then consume 
+this event and cancel the order. This is a way to ensure eventual consistency.
+
 If we had a central orchestrator, it would be called an **orchestration-based saga**.
 
 ### Transactional outbox
