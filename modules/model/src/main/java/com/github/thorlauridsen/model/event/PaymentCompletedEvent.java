@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * This event represents when a payment has been completed.
  */
-public class PaymentCompletedEvent extends BaseEvent {
+public final class PaymentCompletedEvent extends BaseEvent {
 
     private final UUID paymentId;
     private final UUID orderId;

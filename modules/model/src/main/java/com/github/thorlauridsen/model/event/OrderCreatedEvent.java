@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * This event represents when an order has been created.
  */
-public class OrderCreatedEvent extends BaseEvent {
+public final class OrderCreatedEvent extends BaseEvent {
 
     private final UUID orderId;
     private final String product;

@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * This event represents when a payment has failed.
  */
-public class PaymentFailedEvent extends BaseEvent {
+public final class PaymentFailedEvent extends BaseEvent {
 
     private final UUID paymentId;
     private final UUID orderId;
