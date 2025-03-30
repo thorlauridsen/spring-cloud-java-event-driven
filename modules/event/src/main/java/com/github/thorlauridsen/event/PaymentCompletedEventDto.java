@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * This event represents when a payment has been completed.
  */
-public class PaymentCompletedEventDto extends BaseEventDto {
+public final class PaymentCompletedEventDto extends BaseEventDto {
 
     private final UUID paymentId;
     private final UUID orderId;

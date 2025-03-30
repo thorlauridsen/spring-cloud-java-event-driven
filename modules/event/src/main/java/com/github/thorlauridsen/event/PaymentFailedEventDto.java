@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * This event represents when a payment has failed.
  */
-public class PaymentFailedEventDto extends BaseEventDto {
+public final class PaymentFailedEventDto extends BaseEventDto {
 
     private final UUID paymentId;
     private final UUID orderId;

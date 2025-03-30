@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * This event represents when an order has been created.
  */
-public class OrderCreatedEventDto extends BaseEventDto {
+public final class OrderCreatedEventDto extends BaseEventDto {
 
     private final UUID orderId;
     private final String product;
