@@ -8,7 +8,6 @@ import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.repository.IOrderRepo;
-import com.github.thorlauridsen.persistence.OrderRepo;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
  * Order service class.
  * <p>
  * It is annotated with {@link Service} to allow Spring to automatically inject it where needed.
- * This class uses the {@link OrderRepo} to interact with the repository.
+ * This class uses the {@link IOrderRepo} to interact with the repository.
  * <p>
  * The service class knows nothing about data transfer objects or database entities.
  * It only knows about the model classes and here you can implement business logic.
