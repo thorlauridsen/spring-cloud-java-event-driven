@@ -7,7 +7,6 @@ import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.repository.IPaymentRepo;
-import com.github.thorlauridsen.persistence.PaymentRepo;
 import java.util.Random;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
  * Payment service class.
  * <p>
  * It is annotated with {@link Service} to allow Spring to automatically inject it where needed.
- * This class uses the {@link PaymentRepo} to interact with the repository.
+ * This class uses the {@link IPaymentRepo} to interact with the repository.
  * <p>
  * The service class knows nothing about data transfer objects or database entities.
  * It only knows about the model classes and here you can implement business logic.
