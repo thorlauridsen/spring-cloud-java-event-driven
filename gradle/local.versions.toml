@@ -15,7 +15,7 @@ springdoc = "2.8.6"
 aws-spring-cloud-sqs = { module = "io.awspring.cloud:spring-cloud-aws-starter-sqs", version.ref = "aws-spring-cloud" }
 aws-spring-cloud-sns = { module = "io.awspring.cloud:spring-cloud-aws-starter-sns", version.ref = "aws-spring-cloud" }
 
-# H2 for in-memory database
+# H2 for an in-memory database
 h2database = { module = "com.h2database:h2", version.ref = "h2database" }
 
 # JUnit platform launcher for running JUnit tests
@@ -25,9 +25,9 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
 
 # FasterXML Jackson libraries for JSON serialization
-jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
-# PostgreSQL for live database
+# PostgreSQL for a live database
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
 # Spring Boot libraries
