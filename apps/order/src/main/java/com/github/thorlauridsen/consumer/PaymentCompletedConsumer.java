@@ -40,7 +40,7 @@ public class PaymentCompletedConsumer extends BaseEventConsumer<PaymentCompleted
         try {
             orderService.processPaymentCompleted(event.toModel());
         } catch (Exception ex) {
-            logger.error("Failed to process payment failed event: {} {}", event.getEventType(), event.getId(), ex);
+            logger.error("Failed to process payment completed event: {} {}", event.getEventType(), event.getId(), ex);
         }
     }
 
@@ -67,4 +67,3 @@ public class PaymentCompletedConsumer extends BaseEventConsumer<PaymentCompleted
         return PaymentCompletedEventDto.class;
     }
 }
-
