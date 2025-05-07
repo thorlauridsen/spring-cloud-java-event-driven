@@ -13,6 +13,7 @@ import com.github.thorlauridsen.service.OrderOutboxService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ public class OrderOutboxTest {
         assertEquals(1, outboxEventRepo.count());
         assertEquals(1, outboxEventRepo.findAllByProcessedFalse().size());
 
-        var event = outboxEventRepo.findAllByProcessedFalse().getFirst();
+        val event = outboxEventRepo.findAllByProcessedFalse().getFirst();
 
         assertNotNull(event);
         assertNotNull(event.getEventId());
@@ -85,7 +86,7 @@ public class OrderOutboxTest {
 
     @Test
     public void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
-        var json = getOrderCreatedEventJson();
+        val json = getOrderCreatedEventJson();
         processEvent(EventType.PAYMENT_COMPLETED, json);
         processEvent(EventType.PAYMENT_FAILED, json);
 
@@ -104,7 +105,7 @@ public class OrderOutboxTest {
      * @param status The {@link OrderStatus} of the order.
      */
     private void prepareOrder(OrderStatus status) {
-        var order = new Order(
+        val order = new Order(
                 UUID.randomUUID(),
                 OffsetDateTime.now(),
                 status,
@@ -127,7 +128,7 @@ public class OrderOutboxTest {
             EventType eventType,
             String payload
     ) {
-        var entity = new OutboxEvent(
+        val entity = new OutboxEvent(
                 UUID.randomUUID(),
                 eventType,
                 payload,
@@ -143,7 +144,7 @@ public class OrderOutboxTest {
      * @return JSON string of an {@link OrderCreatedEventDto}.
      */
     private String getOrderCreatedEventJson() throws JsonProcessingException {
-        var event = new OrderCreatedEventDto(
+        val event = new OrderCreatedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "Computer",

@@ -12,6 +12,7 @@ import com.github.thorlauridsen.persistence.OrderJpaRepo;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class OrderServiceTest {
 
     @Test
     public void processPaymentCompleted_noOrderExists() {
-        var event = new PaymentCompletedEvent(
+        val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -77,7 +78,7 @@ public class OrderServiceTest {
 
     @Test
     public void processPaymentFailed_noOrderExists() {
-        var event = new PaymentFailedEvent(
+        val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID()
@@ -87,8 +88,8 @@ public class OrderServiceTest {
 
     @Test
     public void createOrder_processPaymentCompleted() {
-        var created = createAndAssertOrder();
-        var event = new PaymentCompletedEvent(
+        val created = createAndAssertOrder();
+        val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id(),
@@ -102,8 +103,8 @@ public class OrderServiceTest {
 
     @Test
     public void createOrder_processPaymentFailed() {
-        var created = createAndAssertOrder();
-        var event = new PaymentFailedEvent(
+        val created = createAndAssertOrder();
+        val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
@@ -116,8 +117,8 @@ public class OrderServiceTest {
 
     @Test
     public void createOrder_processPaymentCompleted_deduplicationWorks() {
-        var created = createAndAssertOrder();
-        var event = new PaymentCompletedEvent(
+        val created = createAndAssertOrder();
+        val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id(),
@@ -132,8 +133,8 @@ public class OrderServiceTest {
 
     @Test
     public void createOrder_processPaymentFailed_deduplicationWorks() {
-        var created = createAndAssertOrder();
-        var event = new PaymentFailedEvent(
+        val created = createAndAssertOrder();
+        val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
@@ -153,11 +154,11 @@ public class OrderServiceTest {
      * @return {@link Order} created order.
      */
     private Order createAndAssertOrder() {
-        var order = new OrderCreate(
+        val order = new OrderCreate(
                 "Computer",
                 199.0
         );
-        var created = orderService.create(order);
+        val created = orderService.create(order);
 
         assertNotNull(created);
         assertEquals("Computer", created.product());
@@ -166,7 +167,7 @@ public class OrderServiceTest {
         assertEquals(1, orderRepo.count());
         assertEquals(1, outboxEventRepo.count());
 
-        var orderEntity = orderRepo.findById(created.id());
+        val orderEntity = orderRepo.findById(created.id());
         assertTrue(orderEntity.isPresent());
 
         return created;
@@ -182,7 +183,7 @@ public class OrderServiceTest {
      * @throws OrderNotFoundException if the order is not found.
      */
     private void getAndAssertOrder(UUID orderId, OrderStatus expectedStatus) throws OrderNotFoundException {
-        var order = orderService.findById(orderId);
+        val order = orderService.findById(orderId);
         assertNotNull(order);
         assertEquals("Computer", order.product());
         assertEquals(199.0, order.amount());

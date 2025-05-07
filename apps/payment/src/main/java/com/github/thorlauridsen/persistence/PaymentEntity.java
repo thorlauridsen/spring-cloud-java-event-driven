@@ -9,12 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing the database entity for payments to be saved in the "payment" table.
  */
 @Entity
 @Table(name = "payment")
+@NoArgsConstructor
 public class PaymentEntity {
 
     @Id
@@ -32,13 +34,6 @@ public class PaymentEntity {
 
     @Column(nullable = false)
     private double amount;
-
-    /**
-     * Empty default constructor required by JPA.
-     */
-    protected PaymentEntity() {
-
-    }
 
     /**
      * Constructor for creating a new instance of PaymentEntity.

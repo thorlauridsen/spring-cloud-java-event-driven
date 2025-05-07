@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
 import java.util.UUID;
+import lombok.Getter;
 
 /**
  * This event represents when an order has been created.
  */
+@Getter
 public final class OrderCreatedEventDto extends BaseEventDto {
 
     private final UUID orderId;
@@ -48,35 +50,5 @@ public final class OrderCreatedEventDto extends BaseEventDto {
                 this.getProduct(),
                 this.getAmount()
         );
-    }
-
-    /**
-     * Get the UUID of the order.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the order.
-     */
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    /**
-     * Get the name of the product.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return name of the product.
-     */
-    public String getProduct() {
-        return product;
-    }
-
-    /**
-     * Get the amount of the product.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return amount of the product.
-     */
-    public double getAmount() {
-        return amount;
     }
 }

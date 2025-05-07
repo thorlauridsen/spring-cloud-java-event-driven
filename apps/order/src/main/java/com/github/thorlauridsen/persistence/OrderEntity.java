@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing the database entity for orders to be saved in the "product_order" table.
@@ -16,6 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "product_order")
+@NoArgsConstructor
 public class OrderEntity {
 
     @Id
@@ -33,13 +35,6 @@ public class OrderEntity {
 
     @Column(nullable = false)
     private double amount;
-
-    /**
-     * Empty default constructor required by JPA.
-     */
-    protected OrderEntity() {
-
-    }
 
     /**
      * Constructor for creating a new instance of OrderEntity.

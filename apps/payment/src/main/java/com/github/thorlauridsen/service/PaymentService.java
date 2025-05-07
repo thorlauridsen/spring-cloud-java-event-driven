@@ -9,8 +9,9 @@ import com.github.thorlauridsen.model.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.repository.IPaymentRepo;
 import java.util.Random;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,31 +24,14 @@ import org.springframework.stereotype.Service;
  * It only knows about the model classes and here you can implement business logic.
  * The idea here is to keep the various layers separated.
  */
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class PaymentService {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DeduplicationService deduplicationService;
     private final PaymentOutboxService outboxService;
     private final IPaymentRepo paymentRepo;
-
-    /**
-     * Constructor for PaymentService.
-     *
-     * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
-     * @param outboxService        {@link PaymentOutboxService} for preparing outbox events.
-     * @param paymentRepo          {@link IPaymentRepo} for interacting with the payment table.
-     */
-    public PaymentService(
-            DeduplicationService deduplicationService,
-            PaymentOutboxService outboxService,
-            IPaymentRepo paymentRepo
-    ) {
-        this.deduplicationService = deduplicationService;
-        this.outboxService = outboxService;
-        this.paymentRepo = paymentRepo;
-    }
 
     /**
      * Process an order created event.
@@ -64,20 +48,20 @@ public class PaymentService {
      */
     public void processOrderCreated(OrderCreatedEvent event) {
         if (deduplicationService.isDuplicate(event.getId())) {
-            logger.warn("Event already processed with id: {}", event.getId());
+            log.warn("Event already processed with id: {}", event.getId());
             return;
         }
-        var random = new Random().nextBoolean();
+        val random = new Random().nextBoolean();
         var status = PaymentStatus.COMPLETED;
         if (random) {
             status = PaymentStatus.FAILED;
         }
-        var payment = new PaymentCreate(
+        val payment = new PaymentCreate(
                 event.getOrderId(),
                 status,
                 event.getAmount()
         );
-        var saved = paymentRepo.save(payment);
+        val saved = paymentRepo.save(payment);
         deduplicationService.record(event.getId());
         outboxService.prepareEvent(saved);
     }
@@ -90,13 +74,13 @@ public class PaymentService {
      * @throws PaymentNotFoundException if the payment is not found.
      */
     public Payment findByOrderId(UUID orderId) throws PaymentNotFoundException {
-        logger.info("Finding payment with order id: {}", orderId);
+        log.info("Finding payment with order id: {}", orderId);
 
-        var payment = paymentRepo.findByOrderId(orderId);
+        val payment = paymentRepo.findByOrderId(orderId);
         if (payment.isEmpty()) {
             throw new PaymentNotFoundException("Payment not found with order id: " + orderId);
         }
-        logger.info("Found payment: {}", payment);
+        log.info("Found payment: {}", payment);
         return payment.get();
     }
 }

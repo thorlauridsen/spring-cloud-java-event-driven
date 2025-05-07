@@ -9,8 +9,9 @@ import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.repository.IOrderRepo;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,31 +24,14 @@ import org.springframework.stereotype.Service;
  * It only knows about the model classes and here you can implement business logic.
  * The idea here is to keep the various layers separated.
  */
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class OrderService {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final DeduplicationService deduplicationService;
     private final OrderOutboxService outboxService;
     private final IOrderRepo orderRepo;
-
-    /**
-     * Constructor for OrderService.
-     *
-     * @param deduplicationService {@link DeduplicationService} for checking if an event has already been processed.
-     * @param orderRepo            {@link IOrderRepo} for interacting with the order repository.
-     * @param outboxService        {@link OrderOutboxService} for preparing outbox events.
-     */
-    public OrderService(
-            DeduplicationService deduplicationService,
-            OrderOutboxService outboxService,
-            IOrderRepo orderRepo
-    ) {
-        this.deduplicationService = deduplicationService;
-        this.outboxService = outboxService;
-        this.orderRepo = orderRepo;
-    }
 
     /**
      * Process a payment completed event.
@@ -63,7 +47,7 @@ public class OrderService {
      */
     public void processPaymentCompleted(PaymentCompletedEvent event) throws OrderNotFoundException {
         if (deduplicationService.isDuplicate(event.getId())) {
-            logger.warn("Event already processed with id: {}", event.getId());
+            log.warn("Event already processed with id: {}", event.getId());
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.COMPLETED);
@@ -84,7 +68,7 @@ public class OrderService {
      */
     public void processPaymentFailed(PaymentFailedEvent event) throws OrderNotFoundException {
         if (deduplicationService.isDuplicate(event.getId())) {
-            logger.warn("Event already processed with id: {}", event.getId());
+            log.warn("Event already processed with id: {}", event.getId());
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.CANCELLED);
@@ -98,10 +82,10 @@ public class OrderService {
      * @return {@link Order}.
      */
     public Order create(OrderCreate order) {
-        logger.info("Creating order: {}", order);
+        log.info("Creating order: {}", order);
 
-        var saved = orderRepo.create(order);
-        logger.info("Order created with id: {}", saved.id());
+        val saved = orderRepo.create(order);
+        log.info("Order created with id: {}", saved.id());
 
         outboxService.prepareEvent(saved);
         return saved;
@@ -115,13 +99,13 @@ public class OrderService {
      * @throws OrderNotFoundException if the order is not found.
      */
     public Order findById(UUID id) throws OrderNotFoundException {
-        logger.info("Finding order with id: {}", id);
+        log.info("Finding order with id: {}", id);
 
-        var order = orderRepo.findById(id);
+        val order = orderRepo.findById(id);
         if (order.isEmpty()) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
-        logger.info("Found order: {}", order);
+        log.info("Found order: {}", order);
         return order.get();
     }
 
@@ -137,15 +121,15 @@ public class OrderService {
             OrderStatus status
     ) throws OrderNotFoundException {
 
-        var optionalOrder = orderRepo.findById(id);
+        val optionalOrder = orderRepo.findById(id);
         if (optionalOrder.isEmpty()) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
 
-        var foundOrder = optionalOrder.get();
-        var order = Order.updateStatus(foundOrder, status);
-        var updated = orderRepo.update(order);
+        val foundOrder = optionalOrder.get();
+        val order = Order.updateStatus(foundOrder, status);
+        val updated = orderRepo.update(order);
 
-        logger.info("Set order status to {} for order id {}", status, updated.id());
+        log.info("Set order status to {} for order id {}", status, updated.id());
     }
 }

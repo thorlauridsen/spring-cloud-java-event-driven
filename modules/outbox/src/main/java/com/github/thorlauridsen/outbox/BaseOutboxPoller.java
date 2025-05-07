@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
@@ -21,26 +22,12 @@ import org.springframework.scheduling.annotation.Scheduled;
  * Then we can use a scheduled poller to fetch events to be processed from the "outbox" table.
  * Essentially, a database transaction is completed before events are published.
  */
+@RequiredArgsConstructor
+@Slf4j
 public abstract class BaseOutboxPoller {
-
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected final ObjectMapper objectMapper;
     protected final IOutboxEventRepo outboxEventRepo;
-
-    /**
-     * Constructor for BaseOutboxPoller.
-     *
-     * @param objectMapper    FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
-     * @param outboxEventRepo {@link IOutboxEventRepo} for interacting with the outbox table.
-     */
-    public BaseOutboxPoller(
-            ObjectMapper objectMapper,
-            IOutboxEventRepo outboxEventRepo
-    ) {
-        this.objectMapper = objectMapper;
-        this.outboxEventRepo = outboxEventRepo;
-    }
 
     /**
      * Polls the outbox table every 5 seconds and processes unprocessed events.
@@ -49,14 +36,14 @@ public abstract class BaseOutboxPoller {
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void pollOutboxTable() {
-        var events = outboxEventRepo.findAllByProcessedFalse();
+        val events = outboxEventRepo.findAllByProcessedFalse();
 
         if (events.isEmpty()) {
             return;
         }
-        logger.info("Found {} unprocessed events. Processing...", events.size());
+        log.info("Found {} unprocessed events. Processing...", events.size());
 
-        for (OutboxEvent event : events) {
+        for (val event : events) {
             process(event);
         }
     }

@@ -5,6 +5,8 @@ import com.github.thorlauridsen.model.PaymentCreate;
 import com.github.thorlauridsen.model.repository.IPaymentRepo;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,18 +21,10 @@ import org.springframework.stereotype.Repository;
  * automatically detect it as a bean and inject it where needed.
  */
 @Repository
+@RequiredArgsConstructor
 public class PaymentRepo implements IPaymentRepo {
 
     private final PaymentJpaRepo jpaRepo;
-
-    /**
-     * Constructor for PaymentRepo.
-     *
-     * @param jpaRepo JpaRepository {@link PaymentJpaRepo} for directly interacting with the payment table.
-     */
-    public PaymentRepo(PaymentJpaRepo jpaRepo) {
-        this.jpaRepo = jpaRepo;
-    }
 
     /**
      * Save a payment in the database.
@@ -41,12 +35,12 @@ public class PaymentRepo implements IPaymentRepo {
      */
     @Override
     public Payment save(PaymentCreate payment) {
-        var entity = new PaymentEntity(
+        val entity = new PaymentEntity(
                 payment.orderId(),
                 payment.status(),
                 payment.amount()
         );
-        var saved = jpaRepo.save(entity);
+        val saved = jpaRepo.save(entity);
         return saved.toModel();
     }
 
@@ -58,7 +52,7 @@ public class PaymentRepo implements IPaymentRepo {
      */
     @Override
     public Optional<Payment> findByOrderId(UUID orderId) {
-        var found = jpaRepo.findByOrderId(orderId);
+        val found = jpaRepo.findByOrderId(orderId);
         return found.map(PaymentEntity::toModel);
     }
 }

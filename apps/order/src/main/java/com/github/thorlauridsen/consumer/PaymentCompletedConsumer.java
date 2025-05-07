@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.event.PaymentCompletedEventDto;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sqs.annotation.SqsListener;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
  * This class will consume the specific event and process it in the {@link OrderService}.
  */
 @Component
+@Slf4j
 public class PaymentCompletedConsumer extends BaseEventConsumer<PaymentCompletedEventDto> {
 
     private final OrderService orderService;
@@ -40,7 +42,7 @@ public class PaymentCompletedConsumer extends BaseEventConsumer<PaymentCompleted
         try {
             orderService.processPaymentCompleted(event.toModel());
         } catch (Exception ex) {
-            logger.error("Failed to process payment completed event: {} {}", event.getEventType(), event.getId(), ex);
+            log.error("Failed to process payment completed event: {} {}", event.getEventType(), event.getId(), ex);
         }
     }
 

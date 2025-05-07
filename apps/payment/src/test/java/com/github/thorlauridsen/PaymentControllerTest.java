@@ -9,6 +9,7 @@ import com.github.thorlauridsen.persistence.PaymentJpaRepo;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,14 +68,14 @@ public class PaymentControllerTest extends BaseMockMvc {
 
     @Test
     public void getPayment_noPaymentExists() throws Exception {
-        var orderId = UUID.randomUUID();
-        var response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + orderId);
+        val orderId = UUID.randomUUID();
+        val response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + orderId);
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
     public void processOrderCreated_getPayment_paymentExists() throws Exception {
-        var event = new OrderCreatedEvent(
+        val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "Computer",
@@ -82,11 +83,11 @@ public class PaymentControllerTest extends BaseMockMvc {
         );
         paymentService.processOrderCreated(event);
 
-        var response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + event.getOrderId());
+        val response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + event.getOrderId());
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
-        var responseJson = response.getContentAsString();
-        var payment = objectMapper.readValue(responseJson, PaymentDto.class);
+        val responseJson = response.getContentAsString();
+        val payment = objectMapper.readValue(responseJson, PaymentDto.class);
 
         assertNotNull(payment);
         assertEquals(event.getOrderId(), payment.orderId());

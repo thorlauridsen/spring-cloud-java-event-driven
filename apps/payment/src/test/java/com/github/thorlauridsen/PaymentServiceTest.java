@@ -8,6 +8,7 @@ import com.github.thorlauridsen.persistence.PaymentJpaRepo;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class PaymentServiceTest {
 
     @Test
     public void processOrderCreated() {
-        var event = new OrderCreatedEvent(
+        val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "Computer",
@@ -74,7 +75,7 @@ public class PaymentServiceTest {
 
     @Test
     public void processOrderCreated_deduplicationWorks() {
-        var event = new OrderCreatedEvent(
+        val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 "Computer",
@@ -94,7 +95,7 @@ public class PaymentServiceTest {
      * @throws PaymentNotFoundException if the payment is not found.
      */
     private void getAndAssertPayment(UUID orderId) throws PaymentNotFoundException {
-        var payment = paymentService.findByOrderId(orderId);
+        val payment = paymentService.findByOrderId(orderId);
         assertNotNull(payment);
         assertEquals(199.0, payment.amount());
 

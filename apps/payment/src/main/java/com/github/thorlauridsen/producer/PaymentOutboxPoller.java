@@ -6,6 +6,7 @@ import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.BaseOutboxPoller;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  * The poller will then process the event and publish it to the appropriate topic.
  */
 @Service
+@Slf4j
 public class PaymentOutboxPoller extends BaseOutboxPoller {
 
     private final PaymentCompletedProducer paymentCompletedProducer;
@@ -49,7 +51,7 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
     @Override
     public void process(OutboxEvent event) {
         try {
-            logger.info("Publishing payment event: {} - {}", event.eventType(), event.payload());
+            log.info("Publishing payment event: {} - {}", event.eventType(), event.payload());
 
             switch (event.eventType()) {
                 case PAYMENT_COMPLETED:
@@ -61,14 +63,14 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
                     paymentFailedProducer.publish(failedEvent);
                     break;
                 default:
-                    logger.warn("Invalid payment event type: {}", event.eventType());
+                    log.warn("Invalid payment event type: {}", event.eventType());
                     return;
             }
             outboxEventRepo.markAsProcessed(event.eventId());
-            logger.info("Successfully processed payment outbox event: {} {}", event.eventType(), event.eventId());
+            log.info("Successfully processed payment outbox event: {} {}", event.eventType(), event.eventId());
 
         } catch (Exception e) {
-            logger.error("Failed to process payment event: {}", event.eventId(), e);
+            log.error("Failed to process payment event: {}", event.eventId(), e);
         }
     }
 }

@@ -3,6 +3,8 @@ package com.github.thorlauridsen.deduplication;
 import com.github.thorlauridsen.model.event.ProcessedEvent;
 import com.github.thorlauridsen.model.repository.IProcessedEventRepo;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,18 +19,10 @@ import org.springframework.stereotype.Repository;
  * automatically detect it as a bean and inject it where needed.
  */
 @Repository
+@RequiredArgsConstructor
 public class ProcessedEventRepo implements IProcessedEventRepo {
 
     private final ProcessedEventJpaRepo jpaRepo;
-
-    /**
-     * Constructor for ProcessedEventRepo.
-     *
-     * @param jpaRepo JpaRepository {@link ProcessedEventJpaRepo} for directly interacting with the processed event table.
-     */
-    public ProcessedEventRepo(ProcessedEventJpaRepo jpaRepo) {
-        this.jpaRepo = jpaRepo;
-    }
 
     /**
      * Check if an event exists by id.
@@ -49,8 +43,8 @@ public class ProcessedEventRepo implements IProcessedEventRepo {
      */
     @Override
     public ProcessedEvent save(ProcessedEvent event) {
-        var entity = ProcessedEventEntity.fromModel(event);
-        var saved = jpaRepo.save(entity);
+        val entity = ProcessedEventEntity.fromModel(event);
+        val saved = jpaRepo.save(entity);
         return saved.toModel();
     }
 }

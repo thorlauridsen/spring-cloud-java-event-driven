@@ -1,8 +1,8 @@
 package com.github.thorlauridsen.exception;
 
 import java.time.OffsetDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,9 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * This ensures that whenever an exception is thrown, a proper error response is returned to the client.
  */
 @ControllerAdvice
+@Slf4j
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Handles all domain exceptions.
@@ -55,10 +54,10 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
             Exception exception,
             HttpStatus httpStatus
     ) {
-        var message = exception.getMessage() != null ? exception.getMessage() : "An unexpected error occurred";
-        var errorDto = new ErrorDto(message, OffsetDateTime.now());
+        val message = exception.getMessage() != null ? exception.getMessage() : "An unexpected error occurred";
+        val errorDto = new ErrorDto(message, OffsetDateTime.now());
 
-        logger.error(exception.getMessage(), exception);
+        log.error(exception.getMessage(), exception);
         return ResponseEntity.status(httpStatus).body(errorDto);
     }
 }

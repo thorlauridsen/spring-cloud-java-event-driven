@@ -2,8 +2,8 @@ package com.github.thorlauridsen.producer;
 
 import com.github.thorlauridsen.event.BaseEventDto;
 import io.awspring.cloud.sns.core.SnsTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Abstract class for an event producer.
@@ -11,25 +11,12 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The type of event to publish.
  */
+@RequiredArgsConstructor
+@Slf4j
 public abstract class BaseEventProducer<T extends BaseEventDto> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SnsTemplate snsTemplate;
     private final String topicArn;
-
-    /**
-     * Constructor for EventProducer.
-     *
-     * @param snsTemplate The {@link SnsTemplate} to use for publishing events.
-     * @param topicArn    The ARN of the SNS topic to which messages will be sent.
-     */
-    public BaseEventProducer(
-            SnsTemplate snsTemplate,
-            String topicArn
-    ) {
-        this.snsTemplate = snsTemplate;
-        this.topicArn = topicArn;
-    }
 
     /**
      * Publish the event.
@@ -38,6 +25,6 @@ public abstract class BaseEventProducer<T extends BaseEventDto> {
      */
     public void publish(T event) {
         snsTemplate.convertAndSend(topicArn, event);
-        logger.info("Published event: {} {}", event.getEventType(), event.getId());
+        log.info("Published event: {} {}", event.getEventType(), event.getId());
     }
 }

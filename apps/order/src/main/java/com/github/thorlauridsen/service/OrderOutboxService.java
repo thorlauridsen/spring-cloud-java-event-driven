@@ -5,28 +5,21 @@ import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
  * Service class for the order outbox.
  * This class is responsible for preparing events to be saved to the outbox table.
  */
+@RequiredArgsConstructor
 @Service
+@Slf4j
 public class OrderOutboxService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final IOutboxEventRepo outboxRepo;
-
-    /**
-     * Constructor for OrderOutboxService.
-     *
-     * @param outboxRepo {@link IOutboxEventRepo} for interacting with the outbox table.
-     */
-    public OrderOutboxService(IOutboxEventRepo outboxRepo) {
-        this.outboxRepo = outboxRepo;
-    }
 
     /**
      * Prepare an event to be saved to the outbox table.
@@ -38,10 +31,10 @@ public class OrderOutboxService {
      */
     public void prepareEvent(Order order) {
         if (order.status() != OrderStatus.CREATED) {
-            logger.warn("Could not prepare order with order status: {}", order.status());
+            log.warn("Could not prepare order with order status: {}", order.status());
             return;
         }
-        var event = new OrderCreatedEvent(
+        val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 order.id(),
                 order.product(),

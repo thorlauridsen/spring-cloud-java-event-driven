@@ -4,6 +4,7 @@ h2database = "2.3.232"
 jackson = "2.19.0"
 junitPlatformLauncher = "1.11.4"
 liquibase = "4.31.1"
+lombok = "8.13.1"
 postgres = "42.7.5"
 springboot = "3.4.5"
 springDependencyPlugin = "1.1.7"
@@ -40,5 +41,9 @@ springboot-starter-web = { module = "org.springframework.boot:spring-boot-starte
 springdoc-openapi-starter-webmvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
 [plugins]
+# Lombok
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
+
+# Spring plugins
 springboot = { id = "org.springframework.boot", version.ref = "springboot" }
 spring-dependencies = { id = "io.spring.dependency-management", version.ref = "springDependencyPlugin" }

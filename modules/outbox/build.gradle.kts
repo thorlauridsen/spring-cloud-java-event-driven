@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
+	alias(local.plugins.lombok)
 	alias(local.plugins.springboot)
 	alias(local.plugins.spring.dependencies)
 }
