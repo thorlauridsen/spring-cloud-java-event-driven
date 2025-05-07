@@ -1,3 +1,7 @@
+plugins {
+	alias(local.plugins.lombok)
+}
+
 dependencies {
 	// The consumer subproject needs access to the event and model subprojects
 	implementation(projects.event)

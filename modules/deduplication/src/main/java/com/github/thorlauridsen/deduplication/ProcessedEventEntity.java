@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing a processed event.
@@ -16,6 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "processed_event")
+@NoArgsConstructor
 public class ProcessedEventEntity {
 
     @Id
@@ -23,12 +25,6 @@ public class ProcessedEventEntity {
 
     @Column(nullable = false)
     private OffsetDateTime processedAt;
-
-    /**
-     * Empty default constructor required by JPA.
-     */
-    public ProcessedEventEntity() {
-    }
 
     /**
      * Constructor for ProcessedEventEntity.

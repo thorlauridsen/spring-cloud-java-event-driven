@@ -5,25 +5,19 @@ import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import com.github.thorlauridsen.outbox.OutboxEventRepo;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
  * Service class for the payment outbox.
  * This class is responsible for preparing events to be saved to the outbox table.
  */
+@RequiredArgsConstructor
 @Service
 public class PaymentOutboxService {
 
     private final OutboxEventRepo outboxRepo;
-
-    /**
-     * Constructor for PaymentOutboxService.
-     *
-     * @param outboxRepo {@link OutboxEventRepo}
-     */
-    public PaymentOutboxService(OutboxEventRepo outboxRepo) {
-        this.outboxRepo = outboxRepo;
-    }
 
     /**
      * Prepare an event to be saved to the outbox table.
@@ -37,7 +31,7 @@ public class PaymentOutboxService {
     public void prepareEvent(Payment payment) {
         switch (payment.status()) {
             case COMPLETED -> {
-                var event = new PaymentCompletedEvent(
+                val event = new PaymentCompletedEvent(
                         UUID.randomUUID(),
                         payment.id(),
                         payment.orderId(),
@@ -46,7 +40,7 @@ public class PaymentOutboxService {
                 outboxRepo.save(event);
             }
             case FAILED -> {
-                var event = new PaymentFailedEvent(
+                val event = new PaymentFailedEvent(
                         UUID.randomUUID(),
                         payment.id(),
                         payment.orderId()

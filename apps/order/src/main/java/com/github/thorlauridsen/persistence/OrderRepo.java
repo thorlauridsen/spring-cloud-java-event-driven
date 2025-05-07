@@ -6,6 +6,8 @@ import com.github.thorlauridsen.model.OrderCreate;
 import com.github.thorlauridsen.model.repository.IOrderRepo;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,18 +22,10 @@ import org.springframework.stereotype.Repository;
  * automatically detect it as a bean and inject it where needed.
  */
 @Repository
+@RequiredArgsConstructor
 public class OrderRepo implements IOrderRepo {
 
     private final OrderJpaRepo jpaRepo;
-
-    /**
-     * Constructor for OrderRepo.
-     *
-     * @param jpaRepo JpaRepository {@link OrderJpaRepo} for directly interacting with the order table.
-     */
-    public OrderRepo(OrderJpaRepo jpaRepo) {
-        this.jpaRepo = jpaRepo;
-    }
 
     /**
      * Create a new order with OrderStatus.CREATED.
@@ -41,12 +35,12 @@ public class OrderRepo implements IOrderRepo {
      */
     @Override
     public Order create(OrderCreate order) {
-        var entity = new OrderEntity(
+        val entity = new OrderEntity(
                 OrderStatus.CREATED,
                 order.product(),
                 order.amount()
         );
-        var saved = jpaRepo.save(entity);
+        val saved = jpaRepo.save(entity);
         return saved.toModel();
     }
 
@@ -58,8 +52,8 @@ public class OrderRepo implements IOrderRepo {
      */
     @Override
     public Order update(Order order) {
-        var entity = OrderEntity.fromModel(order);
-        var saved = jpaRepo.save(entity);
+        val entity = OrderEntity.fromModel(order);
+        val saved = jpaRepo.save(entity);
         return saved.toModel();
     }
 
@@ -71,7 +65,7 @@ public class OrderRepo implements IOrderRepo {
      */
     @Override
     public Optional<Order> findById(UUID id) {
-        var found = jpaRepo.findById(id);
+        val found = jpaRepo.findById(id);
         return found.map(OrderEntity::toModel);
     }
 }

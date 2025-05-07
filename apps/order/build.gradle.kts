@@ -1,4 +1,5 @@
 plugins {
+	alias(local.plugins.lombok)
 	alias(local.plugins.springboot)
 	alias(local.plugins.spring.dependencies)
 }

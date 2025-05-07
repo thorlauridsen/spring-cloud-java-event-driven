@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEventDto;
-import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
@@ -14,6 +13,7 @@ import com.github.thorlauridsen.service.PaymentOutboxService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class PaymentOutboxTest {
 
     @Test
     public void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
-        var json = getPaymentCompletedEventJson();
+        val json = getPaymentCompletedEventJson();
         processEvent(EventType.ORDER_CREATED, json);
 
         assertEquals(0, outboxEventRepo.count());
@@ -91,7 +91,7 @@ public class PaymentOutboxTest {
             PaymentStatus status,
             EventType expectedEventType
     ) {
-        var payment = new Payment(
+        val payment = new Payment(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 OffsetDateTime.now(),
@@ -103,7 +103,7 @@ public class PaymentOutboxTest {
         assertEquals(1, outboxEventRepo.count());
         assertEquals(1, outboxEventRepo.findAllByProcessedFalse().size());
 
-        var event = outboxEventRepo.findAllByProcessedFalse().getFirst();
+        val event = outboxEventRepo.findAllByProcessedFalse().getFirst();
 
         assertNotNull(event);
         assertNotNull(event.getEventId());
@@ -128,7 +128,7 @@ public class PaymentOutboxTest {
             EventType eventType,
             String payload
     ) {
-        var entity = new OutboxEvent(
+        val entity = new OutboxEvent(
                 UUID.randomUUID(),
                 eventType,
                 payload,
@@ -139,26 +139,12 @@ public class PaymentOutboxTest {
     }
 
     /**
-     * Get a JSON string of an {@link PaymentFailedEventDto}.
-     *
-     * @return JSON string of an {@link PaymentFailedEventDto}.
-     */
-    private String getPaymentFailedEventJson() throws JsonProcessingException {
-        var event = new PaymentFailedEventDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                UUID.randomUUID()
-        );
-        return objectMapper.writeValueAsString(event);
-    }
-
-    /**
      * Get a JSON string of an {@link PaymentCompletedEventDto}.
      *
      * @return JSON string of an {@link PaymentCompletedEventDto}.
      */
     private String getPaymentCompletedEventJson() throws JsonProcessingException {
-        var event = new PaymentCompletedEventDto(
+        val event = new PaymentCompletedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID(),

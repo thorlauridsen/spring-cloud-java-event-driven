@@ -13,6 +13,7 @@ import com.github.thorlauridsen.persistence.OrderJpaRepo;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sns.core.SnsTemplate;
 import java.util.UUID;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,15 +73,15 @@ public class OrderControllerTest extends BaseMockMvc {
 
     @Test
     public void getOrder_noOrderExists() throws Exception {
-        var orderId = UUID.randomUUID();
-        var response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
+        val orderId = UUID.randomUUID();
+        val response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
     public void createOrder_processPaymentCompleted() throws Exception {
-        var created = postRequestAndAssertOrder();
-        var event = new PaymentCompletedEvent(
+        val created = postRequestAndAssertOrder();
+        val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id(),
@@ -92,8 +93,8 @@ public class OrderControllerTest extends BaseMockMvc {
 
     @Test
     public void createOrder_processPaymentFailed() throws Exception {
-        var created = postRequestAndAssertOrder();
-        var event = new PaymentFailedEvent(
+        val created = postRequestAndAssertOrder();
+        val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 created.id()
@@ -111,16 +112,16 @@ public class OrderControllerTest extends BaseMockMvc {
      * @return {@link Order} created order.
      */
     private Order postRequestAndAssertOrder() throws Exception {
-        var order = new OrderCreateDto(
+        val order = new OrderCreateDto(
                 "Computer",
                 199.0
         );
-        var json = objectMapper.writeValueAsString(order);
-        var response = mockPost(json, ORDER_BASE_ENDPOINT + "/create");
+        val json = objectMapper.writeValueAsString(order);
+        val response = mockPost(json, ORDER_BASE_ENDPOINT + "/create");
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
-        var responseJson = response.getContentAsString();
-        var created = objectMapper.readValue(responseJson, OrderDto.class);
+        val responseJson = response.getContentAsString();
+        val created = objectMapper.readValue(responseJson, OrderDto.class);
 
         assertNotNull(created);
         assertEquals("Computer", created.product());
@@ -129,7 +130,7 @@ public class OrderControllerTest extends BaseMockMvc {
         assertEquals(1, orderRepo.count());
         assertEquals(1, outboxEventRepo.count());
 
-        var orderEntity = orderRepo.findById(created.id());
+        val orderEntity = orderRepo.findById(created.id());
         assertTrue(orderEntity.isPresent());
 
         return created.toModel();
@@ -144,11 +145,11 @@ public class OrderControllerTest extends BaseMockMvc {
      * @param expectedStatus {@link OrderStatus} expected status of the order.
      */
     private void getRequestAndAssertOrder(UUID orderId, OrderStatus expectedStatus) throws Exception {
-        var response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
+        val response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
-        var responseJson = response.getContentAsString();
-        var order = objectMapper.readValue(responseJson, OrderDto.class);
+        val responseJson = response.getContentAsString();
+        val order = objectMapper.readValue(responseJson, OrderDto.class);
 
         assertNotNull(order);
         assertEquals("Computer", order.product());

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import java.util.UUID;
+import lombok.Getter;
 
 /**
  * This event represents when a payment has failed.
  */
+@Getter
 public final class PaymentFailedEventDto extends BaseEventDto {
 
     private final UUID paymentId;
@@ -43,25 +45,5 @@ public final class PaymentFailedEventDto extends BaseEventDto {
                 this.getPaymentId(),
                 this.getOrderId()
         );
-    }
-
-    /**
-     * Get the UUID of the payment.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the payment.
-     */
-    public UUID getPaymentId() {
-        return paymentId;
-    }
-
-    /**
-     * Get the UUID of the order.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the order.
-     */
-    public UUID getOrderId() {
-        return orderId;
     }
 }

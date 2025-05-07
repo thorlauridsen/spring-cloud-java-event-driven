@@ -9,6 +9,8 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Class representing the outbox entity for the "outbox" table.
@@ -23,7 +25,9 @@ import java.util.UUID;
  * Essentially, a database transaction is completed before events are published.
  */
 @Entity
+@Getter
 @Table(name = "outbox")
+@NoArgsConstructor
 public class OutboxEventEntity {
 
     /**
@@ -54,12 +58,6 @@ public class OutboxEventEntity {
      */
     @Column(nullable = false)
     private Boolean processed = false;
-
-    /**
-     * Empty default constructor required by JPA.
-     */
-    protected OutboxEventEntity() {
-    }
 
     /**
      * Constructor for OutboxEntity.
@@ -124,41 +122,5 @@ public class OutboxEventEntity {
                 outboxEvent.createdAt(),
                 outboxEvent.processed()
         );
-    }
-
-    /**
-     * Get the event ID.
-     *
-     * @return {@link UUID} event ID.
-     */
-    public UUID getEventId() {
-        return eventId;
-    }
-
-    /**
-     * Get the event type.
-     *
-     * @return {@link EventType} event type.
-     */
-    public EventType getEventType() {
-        return eventType;
-    }
-
-    /**
-     * Get the event JSON payload.
-     *
-     * @return JSON string payload of the event.
-     */
-    public String getPayload() {
-        return payload;
-    }
-
-    /**
-     * Get the created at timestamp.
-     *
-     * @return {@link OffsetDateTime} created at timestamp.
-     */
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
     }
 }

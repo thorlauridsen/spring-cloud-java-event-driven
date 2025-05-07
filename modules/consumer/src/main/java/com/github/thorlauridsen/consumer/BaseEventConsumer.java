@@ -5,8 +5,9 @@ import com.github.thorlauridsen.event.BaseEventDto;
 import com.github.thorlauridsen.event.SnsNotificationDto;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 /**
  * Abstract class for an event consumer.
@@ -14,19 +15,11 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The type of event to consume.
  */
+@RequiredArgsConstructor
+@Slf4j
 public abstract class BaseEventConsumer<T extends BaseEventDto> {
 
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
-
-    /**
-     * Constructor for EventConsumer.
-     *
-     * @param objectMapper FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
-     */
-    public BaseEventConsumer(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     /**
      * Listen for messages on the SQS queue.
@@ -38,19 +31,19 @@ public abstract class BaseEventConsumer<T extends BaseEventDto> {
     @SqsListener
     public void listen(String json) {
         try {
-            logger.debug("Received JSON: {}", json);
+            log.debug("Received JSON: {}", json);
 
-            var notification = objectMapper.readValue(json, SnsNotificationDto.class);
-            logger.debug("Received SNS notification: {}", notification);
+            val notification = objectMapper.readValue(json, SnsNotificationDto.class);
+            log.debug("Received SNS notification: {}", notification);
 
-            var eventJson = notification.message();
+            val eventJson = notification.message();
             T event = objectMapper.readValue(eventJson, getEventClass());
 
-            logger.info("Received event: {} {}", event.getEventType(), event.getId());
+            log.info("Received event: {} {}", event.getEventType(), event.getId());
             processEvent(event);
 
         } catch (IOException e) {
-            logger.error("Error deserializing SNS notification: {}", e.getMessage());
+            log.error("Error deserializing SNS notification: {}", e.getMessage());
         }
     }
 

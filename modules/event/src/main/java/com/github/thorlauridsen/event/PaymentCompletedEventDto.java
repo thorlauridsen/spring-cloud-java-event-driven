@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import java.util.UUID;
+import lombok.Getter;
 
 /**
  * This event represents when a payment has been completed.
  */
+@Getter
 public final class PaymentCompletedEventDto extends BaseEventDto {
 
     private final UUID paymentId;
@@ -48,35 +50,5 @@ public final class PaymentCompletedEventDto extends BaseEventDto {
                 this.getOrderId(),
                 this.getAmount()
         );
-    }
-
-    /**
-     * Get the UUID of the payment.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the payment.
-     */
-    public UUID getPaymentId() {
-        return paymentId;
-    }
-
-    /**
-     * Get the UUID of the order.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return UUID of the order.
-     */
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    /**
-     * Get the amount of the payment.
-     * This getter is used by Jackson to serialize the event.
-     *
-     * @return amount of the payment.
-     */
-    public double getAmount() {
-        return amount;
     }
 }

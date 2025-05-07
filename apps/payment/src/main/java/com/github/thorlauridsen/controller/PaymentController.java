@@ -4,6 +4,8 @@ import com.github.thorlauridsen.dto.PaymentDto;
 import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.service.PaymentService;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,18 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
  * The controller is responsible for converting data transfer objects to models and vice versa.
  */
 @RestController
+@RequiredArgsConstructor
 public class PaymentController implements IPaymentController {
 
     private final PaymentService paymentService;
-
-    /**
-     * Constructor for PaymentController.
-     *
-     * @param paymentService {@link PaymentService}.
-     */
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
 
     /**
      * Get method for payment.
@@ -37,7 +31,7 @@ public class PaymentController implements IPaymentController {
      */
     @Override
     public ResponseEntity<PaymentDto> getByOrderId(UUID orderId) throws PaymentNotFoundException {
-        var payment = paymentService.findByOrderId(orderId);
+        val payment = paymentService.findByOrderId(orderId);
         return ResponseEntity.ok(PaymentDto.fromModel(payment));
     }
 }

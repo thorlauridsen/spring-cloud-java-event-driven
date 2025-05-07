@@ -8,8 +8,9 @@ import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,25 +25,12 @@ import org.springframework.stereotype.Repository;
  * automatically detect it as a bean and inject it where needed.
  */
 @Repository
+@RequiredArgsConstructor
+@Slf4j
 public class OutboxEventRepo implements IOutboxEventRepo {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
     private final OutboxEventJpaRepo jpaRepo;
-
-    /**
-     * Constructor for OutboxEventRepo.
-     *
-     * @param objectMapper FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
-     * @param jpaRepo      JpaRepository {@link OutboxEventJpaRepo} for directly interacting with the outbox table.
-     */
-    public OutboxEventRepo(
-            ObjectMapper objectMapper,
-            OutboxEventJpaRepo jpaRepo
-    ) {
-        this.objectMapper = objectMapper;
-        this.jpaRepo = jpaRepo;
-    }
 
     /**
      * Save an event to the outbox table in the database.
@@ -54,20 +42,20 @@ public class OutboxEventRepo implements IOutboxEventRepo {
     @Override
     public void save(BaseEvent event) {
         try {
-            var json = objectMapper.writeValueAsString(event);
-            var outboxEvent = new OutboxEvent(
+            val json = objectMapper.writeValueAsString(event);
+            val outboxEvent = new OutboxEvent(
                     event.getId(),
                     event.getEventType(),
                     json,
                     OffsetDateTime.now(),
                     false
             );
-            var outboxEntity = OutboxEventEntity.fromModel(outboxEvent);
-            var saved = jpaRepo.save(outboxEntity);
-            logger.info("Saved outbox event: {} {}", saved.getEventType(), saved.getEventId());
+            val outboxEntity = OutboxEventEntity.fromModel(outboxEvent);
+            val saved = jpaRepo.save(outboxEntity);
+            log.info("Saved outbox event: {} {}", saved.getEventType(), saved.getEventId());
 
         } catch (JsonProcessingException ex) {
-            logger.error("Failed to save outbox event {} - {}", event.getId(), ex.getMessage(), ex);
+            log.error("Failed to save outbox event {} - {}", event.getId(), ex.getMessage(), ex);
         }
     }
 
@@ -92,13 +80,13 @@ public class OutboxEventRepo implements IOutboxEventRepo {
      */
     @Override
     public void markAsProcessed(UUID eventId) {
-        var found = jpaRepo.findById(eventId);
+        val found = jpaRepo.findById(eventId);
         if (found.isEmpty()) {
-            logger.warn("Could not find outbox event with ID: {}", eventId);
+            log.warn("Could not find outbox event with ID: {}", eventId);
             return;
         }
-        var updated = OutboxEventEntity.markProcessed(found.get());
+        val updated = OutboxEventEntity.markProcessed(found.get());
         jpaRepo.save(updated);
-        logger.info("Marked outbox event as processed: {}", eventId);
+        log.info("Marked outbox event as processed: {}", eventId);
     }
 }
