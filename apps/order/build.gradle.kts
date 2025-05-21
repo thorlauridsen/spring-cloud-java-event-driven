@@ -27,6 +27,9 @@ dependencies {
 	// Jackson datatype JSR310 dependency for serializing Java 8 Date/Time API
 	implementation(local.jackson.datatype.jsr310)
 
+	// Springdoc OpenAPI for providing Swagger documentation
+	implementation(local.springdoc.openapi.starter.webmvc)
+
 	// H2 database dependency for in-memory database
 	runtimeOnly(local.h2database)
 
@@ -35,9 +38,6 @@ dependencies {
 
 	// Liquibase core dependency for database migrations
 	runtimeOnly(local.liquibase.core)
-
-	// Springdoc OpenAPI for providing Swagger documentation
-	implementation(local.springdoc.openapi.starter.webmvc)
 
 	// Spring Boot test dependencies
 	testImplementation(local.springboot.starter.test)
