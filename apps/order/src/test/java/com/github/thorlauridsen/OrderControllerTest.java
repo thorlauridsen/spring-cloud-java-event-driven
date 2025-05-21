@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
-public class OrderControllerTest extends BaseMockMvc {
+class OrderControllerTest extends BaseMockMvc {
 
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
@@ -62,7 +62,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         orderRepo.deleteAll();
         outboxEventRepo.deleteAll();
         processedEventRepo.deleteAll();
@@ -72,14 +72,14 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void getOrder_noOrderExists() throws Exception {
+    void getOrder_noOrderExists() throws Exception {
         val orderId = UUID.randomUUID();
         val response = mockGet(ORDER_BASE_ENDPOINT + "/" + orderId);
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
-    public void createOrder_processPaymentCompleted() throws Exception {
+    void createOrder_processPaymentCompleted() throws Exception {
         val created = postRequestAndAssertOrder();
         val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -92,7 +92,7 @@ public class OrderControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void createOrder_processPaymentFailed() throws Exception {
+    void createOrder_processPaymentFailed() throws Exception {
         val created = postRequestAndAssertOrder();
         val event = new PaymentFailedEvent(
                 UUID.randomUUID(),

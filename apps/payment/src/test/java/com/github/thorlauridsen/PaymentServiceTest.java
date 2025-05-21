@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PaymentServiceTest {
+class PaymentServiceTest {
 
     @Autowired
     private OutboxEventJpaRepo outboxEventRepo;
@@ -46,7 +46,7 @@ public class PaymentServiceTest {
     private SnsTemplate snsTemplate;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         outboxEventRepo.deleteAll();
         paymentRepo.deleteAll();
         processedEventRepo.deleteAll();
@@ -56,12 +56,12 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void getPayment_noPaymentExists() {
+    void getPayment_noPaymentExists() {
         assertThrows(PaymentNotFoundException.class, () -> paymentService.findByOrderId(UUID.randomUUID()));
     }
 
     @Test
-    public void processOrderCreated() {
+    void processOrderCreated() {
         val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -74,7 +74,7 @@ public class PaymentServiceTest {
     }
 
     @Test
-    public void processOrderCreated_deduplicationWorks() {
+    void processOrderCreated_deduplicationWorks() {
         val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class OrderServiceTest {
+class OrderServiceTest {
 
     @Autowired
     private OrderService orderService;
@@ -51,7 +51,7 @@ public class OrderServiceTest {
     private SnsTemplate snsTemplate;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         orderRepo.deleteAll();
         outboxEventRepo.deleteAll();
         processedEventRepo.deleteAll();
@@ -61,12 +61,12 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void getOrder_noOrderExists() {
+    void getOrder_noOrderExists() {
         assertThrows(OrderNotFoundException.class, () -> orderService.findById(UUID.randomUUID()));
     }
 
     @Test
-    public void processPaymentCompleted_noOrderExists() {
+    void processPaymentCompleted_noOrderExists() {
         val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -77,7 +77,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void processPaymentFailed_noOrderExists() {
+    void processPaymentFailed_noOrderExists() {
         val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -87,7 +87,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_processPaymentCompleted() {
+    void createOrder_processPaymentCompleted() {
         val created = createAndAssertOrder();
         val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -102,7 +102,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_processPaymentFailed() {
+    void createOrder_processPaymentFailed() {
         val created = createAndAssertOrder();
         val event = new PaymentFailedEvent(
                 UUID.randomUUID(),
@@ -116,7 +116,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_processPaymentCompleted_deduplicationWorks() {
+    void createOrder_processPaymentCompleted_deduplicationWorks() {
         val created = createAndAssertOrder();
         val event = new PaymentCompletedEvent(
                 UUID.randomUUID(),
@@ -132,7 +132,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    public void createOrder_processPaymentFailed_deduplicationWorks() {
+    void createOrder_processPaymentFailed_deduplicationWorks() {
         val created = createAndAssertOrder();
         val event = new PaymentFailedEvent(
                 UUID.randomUUID(),

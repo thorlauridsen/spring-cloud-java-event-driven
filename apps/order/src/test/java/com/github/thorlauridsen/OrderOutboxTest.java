@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class OrderOutboxTest {
+class OrderOutboxTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,25 +49,25 @@ public class OrderOutboxTest {
     private SnsTemplate snsTemplate;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         outboxEventRepo.deleteAll();
         assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
-    public void prepareCompletedOrder_noEventExistsInOutbox() {
+    void prepareCompletedOrder_noEventExistsInOutbox() {
         prepareOrder(OrderStatus.COMPLETED);
         assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
-    public void prepareCancelledOrder_noEventExistsInOutbox() {
+    void prepareCancelledOrder_noEventExistsInOutbox() {
         prepareOrder(OrderStatus.CANCELLED);
         assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
-    public void prepareCreatedOrder_existsInOutbox() {
+    void prepareCreatedOrder_existsInOutbox() {
         prepareOrder(OrderStatus.CREATED);
         assertEquals(1, outboxEventRepo.count());
         assertEquals(1, outboxEventRepo.findAllByProcessedFalse().size());
@@ -85,7 +85,7 @@ public class OrderOutboxTest {
     }
 
     @Test
-    public void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
+    void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
         val json = getOrderCreatedEventJson();
         processEvent(EventType.PAYMENT_COMPLETED, json);
         processEvent(EventType.PAYMENT_FAILED, json);
@@ -94,7 +94,7 @@ public class OrderOutboxTest {
     }
 
     @Test
-    public void processEvent_invalidPayload_emptyOutbox() {
+    void processEvent_invalidPayload_emptyOutbox() {
         processEvent(EventType.ORDER_CREATED, "invalidPayload");
         assertEquals(0, outboxEventRepo.count());
     }

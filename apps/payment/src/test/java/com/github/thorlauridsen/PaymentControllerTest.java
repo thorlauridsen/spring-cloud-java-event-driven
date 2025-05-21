@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
-public class PaymentControllerTest extends BaseMockMvc {
+class PaymentControllerTest extends BaseMockMvc {
 
     private final ObjectMapper objectMapper;
     private final OutboxEventJpaRepo outboxEventRepo;
@@ -57,7 +57,7 @@ public class PaymentControllerTest extends BaseMockMvc {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         outboxEventRepo.deleteAll();
         paymentRepo.deleteAll();
         processedEventRepo.deleteAll();
@@ -67,14 +67,14 @@ public class PaymentControllerTest extends BaseMockMvc {
     }
 
     @Test
-    public void getPayment_noPaymentExists() throws Exception {
+    void getPayment_noPaymentExists() throws Exception {
         val orderId = UUID.randomUUID();
         val response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + orderId);
         assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
-    public void processOrderCreated_getPayment_paymentExists() throws Exception {
+    void processOrderCreated_getPayment_paymentExists() throws Exception {
         val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),

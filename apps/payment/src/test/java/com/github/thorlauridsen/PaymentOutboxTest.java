@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class PaymentOutboxTest {
+class PaymentOutboxTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,23 +49,23 @@ public class PaymentOutboxTest {
     private SnsTemplate snsTemplate;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         outboxEventRepo.deleteAll();
         assertEquals(0, outboxEventRepo.count());
     }
 
     @Test
-    public void prepareCompletedPayment_existsInOutbox() {
+    void prepareCompletedPayment_existsInOutbox() {
         preparePaymentAndAssert(PaymentStatus.COMPLETED, EventType.PAYMENT_COMPLETED);
     }
 
     @Test
-    public void prepareCancelledPayment_existsInOutbox() {
+    void prepareCancelledPayment_existsInOutbox() {
         preparePaymentAndAssert(PaymentStatus.FAILED, EventType.PAYMENT_FAILED);
     }
 
     @Test
-    public void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
+    void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
         val json = getPaymentCompletedEventJson();
         processEvent(EventType.ORDER_CREATED, json);
 
@@ -73,7 +73,7 @@ public class PaymentOutboxTest {
     }
 
     @Test
-    public void processEvent_invalidPayload_emptyOutbox() {
+    void processEvent_invalidPayload_emptyOutbox() {
         processEvent(EventType.PAYMENT_COMPLETED, "invalidPayload");
         processEvent(EventType.PAYMENT_FAILED, "invalidPayload");
 
