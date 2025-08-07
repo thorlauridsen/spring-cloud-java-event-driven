@@ -1,4 +1,4 @@
-rootProject.name = "sample"
+rootProject.name = "spring-cloud-java-event-driven"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
