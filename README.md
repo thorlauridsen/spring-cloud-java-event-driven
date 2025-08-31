@@ -234,6 +234,9 @@ This project uses Kotlin DSL instead of the traditional Groovy DSL by
 using **build.gradle.kts** files instead of **build.gradle** files.
 This gives us the benefits of strict typing which lets IDEs provide
 better support for refactoring and auto-completion.
+If you want to read more about the benefits of using
+Kotlin DSL over Groovy DSL, you can check out
+[gradle-kotlin-dsl-vs-groovy-dsl](https://github.com/thorlauridsen/gradle-kotlin-dsl-vs-groovy-dsl)
 
 ### ✅ Use a version catalog
 
