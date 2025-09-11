@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
 
   localstack:
-    image: localstack/localstack:4.7.0
+    image: localstack/localstack:4.8.0
     container_name: localstack
     ports:
       - "127.0.0.1:4566:4566"
