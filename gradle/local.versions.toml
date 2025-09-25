@@ -1,6 +1,6 @@
 [versions]
 aws-spring-cloud = "3.4.0"
-h2database = "2.3.232"
+h2database = "2.4.240"
 jackson = "2.20.0"
 junitPlatformLauncher = "1.12.2"
 liquibase = "4.33.0"
