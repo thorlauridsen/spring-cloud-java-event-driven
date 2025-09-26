@@ -1,6 +1,6 @@
 services:
   order-postgres:
-    image: postgres:17
+    image: postgres:18
     container_name: order-postgres
     environment:
       POSTGRES_USER: postgres
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   payment-postgres:
-    image: postgres:17
+    image: postgres:18
     container_name: payment-postgres
     environment:
       POSTGRES_USER: postgres
