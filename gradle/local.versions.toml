@@ -1,7 +1,7 @@
 [versions]
 aws-spring-cloud = "3.4.0"
 h2database = "2.4.240"
-jackson = "2.20.0"
+jackson = "2.20.1"
 junitPlatformLauncher = "1.12.2"
 liquibase = "5.0.1"
 lombok = "9.0.0"
