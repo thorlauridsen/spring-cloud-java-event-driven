@@ -208,7 +208,7 @@ Once the entire system is running, you can view the Swagger documentation at:
 
 ## Technology
 
-- [JDK21](https://openjdk.org/projects/jdk/21/) - Latest JDK with long-term support
+- [JDK25](https://openjdk.org/projects/jdk/25/) - Latest JDK with long-term support
 - [Gradle](https://github.com/gradle/gradle) - Used for compilation, building, testing and dependency management
 - [Spring Cloud AWS](https://github.com/awspring/spring-cloud-aws) - For interacting with Amazon Web Services SQS and SNS
 - [LocalStack](https://github.com/localstack/localstack) - For testing Amazon Web Services SQS and SNS locally
