@@ -2,7 +2,7 @@
 aws-spring-cloud = "3.4.1"
 h2database = "2.4.240"
 jackson = "2.20.1"
-junitPlatformLauncher = "1.12.2"
+junitPlatformLauncher = "1.14.1"
 liquibase = "5.0.1"
 lombok = "9.1.0"
 postgres = "42.7.8"
