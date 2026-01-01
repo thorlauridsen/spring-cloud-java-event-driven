@@ -8,7 +8,7 @@ lombok = "9.1.0"
 postgres = "42.7.8"
 springboot = "3.5.9"
 springDependencyPlugin = "1.1.7"
-springdoc = "2.8.14"
+springdoc = "2.8.15"
 
 [libraries]
 
