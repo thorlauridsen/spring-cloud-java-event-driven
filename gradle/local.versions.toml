@@ -2,12 +2,12 @@
 aws-spring-cloud = "3.4.2"
 h2database = "2.4.240"
 jackson = "2.20.1"
-junitPlatformLauncher = "1.12.2"
+junit-platform-launcher = "1.12.2"
 liquibase = "5.0.1"
 lombok = "9.1.0"
 postgres = "42.7.8"
 springboot = "3.5.9"
-springDependencyPlugin = "1.1.7"
+spring-dependency-plugin = "1.1.7"
 springdoc = "2.8.15"
 
 [libraries]
@@ -20,7 +20,7 @@ aws-spring-cloud-sns = { module = "io.awspring.cloud:spring-cloud-aws-starter-sn
 h2database = { module = "com.h2database:h2", version.ref = "h2database" }
 
 # JUnit platform launcher for running JUnit tests
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
 
 # Liquibase for managing database changelogs
 liquibase-core = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
@@ -46,4 +46,4 @@ lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
 
 # Spring plugins
 springboot = { id = "org.springframework.boot", version.ref = "springboot" }
-spring-dependencies = { id = "io.spring.dependency-management", version.ref = "springDependencyPlugin" }
+spring-dependencies = { id = "io.spring.dependency-management", version.ref = "spring-dependency-plugin" }
