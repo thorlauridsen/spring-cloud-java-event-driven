@@ -1,5 +1,5 @@
 [versions]
-aws-spring-cloud = "3.4.2"
+aws-spring-cloud = "4.0.0"
 h2database = "2.4.240"
 jackson = "2.21.0"
 junit-platform-launcher = "1.12.2"
