@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
- * This is the BaseMockMvc class that allows you to send and test HTTP requests.
+ * This is the BaseControllerTest class that allows you to send and test HTTP requests.
  */
 @AutoConfigureRestTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
