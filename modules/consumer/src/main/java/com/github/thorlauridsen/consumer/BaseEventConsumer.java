@@ -1,13 +1,12 @@
 package com.github.thorlauridsen.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.event.BaseEventDto;
 import com.github.thorlauridsen.event.SnsNotificationDto;
 import io.awspring.cloud.sqs.annotation.SqsListener;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Abstract class for an event consumer.
@@ -19,7 +18,7 @@ import lombok.val;
 @Slf4j
 public abstract class BaseEventConsumer<T extends BaseEventDto> {
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * Listen for messages on the SQS queue.
@@ -30,21 +29,17 @@ public abstract class BaseEventConsumer<T extends BaseEventDto> {
      */
     @SqsListener
     public void listen(String json) {
-        try {
-            log.debug("Received JSON: {}", json);
 
-            val notification = objectMapper.readValue(json, SnsNotificationDto.class);
-            log.debug("Received SNS notification: {}", notification);
+        log.debug("Received JSON: {}", json);
 
-            val eventJson = notification.message();
-            T event = objectMapper.readValue(eventJson, getEventClass());
+        val notification = jsonMapper.readValue(json, SnsNotificationDto.class);
+        log.debug("Received SNS notification: {}", notification);
 
-            log.info("Received event: {} {}", event.getEventType(), event.getId());
-            processEvent(event);
+        val eventJson = notification.message();
+        T event = jsonMapper.readValue(eventJson, getEventClass());
 
-        } catch (IOException e) {
-            log.error("Error deserializing SNS notification: {}", e.getMessage());
-        }
+        log.info("Received event: {} {}", event.getEventType(), event.getId());
+        processEvent(event);
     }
 
     /**

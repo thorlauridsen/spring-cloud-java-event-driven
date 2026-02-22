@@ -1,13 +1,13 @@
 package com.github.thorlauridsen.producer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.event.PaymentCompletedEventDto;
 import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.model.event.OutboxEvent;
-import com.github.thorlauridsen.outbox.BaseOutboxPoller;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
+import com.github.thorlauridsen.outbox.BaseOutboxPoller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Poller for the outbox table.
@@ -26,18 +26,18 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
     /**
      * Constructor for PaymentOutboxPoller.
      *
-     * @param objectMapper             FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
+     * @param jsonMapper               FasterXML Jackson {@link JsonMapper} for serialization/deserialization.
      * @param outboxEventRepo          {@link IOutboxEventRepo} for interacting with the outbox table.
      * @param paymentCompletedProducer {@link PaymentCompletedProducer} for publishing payment completed events.
      * @param paymentFailedProducer    {@link PaymentFailedProducer} for publishing payment failed events.
      */
     public PaymentOutboxPoller(
-            ObjectMapper objectMapper,
+            JsonMapper jsonMapper,
             IOutboxEventRepo outboxEventRepo,
             PaymentCompletedProducer paymentCompletedProducer,
             PaymentFailedProducer paymentFailedProducer
     ) {
-        super(objectMapper, outboxEventRepo);
+        super(jsonMapper, outboxEventRepo);
         this.paymentCompletedProducer = paymentCompletedProducer;
         this.paymentFailedProducer = paymentFailedProducer;
     }
@@ -55,11 +55,11 @@ public class PaymentOutboxPoller extends BaseOutboxPoller {
 
             switch (event.eventType()) {
                 case PAYMENT_COMPLETED:
-                    var completedEvent = objectMapper.readValue(event.payload(), PaymentCompletedEventDto.class);
+                    var completedEvent = jsonMapper.readValue(event.payload(), PaymentCompletedEventDto.class);
                     paymentCompletedProducer.publish(completedEvent);
                     break;
                 case PAYMENT_FAILED:
-                    var failedEvent = objectMapper.readValue(event.payload(), PaymentFailedEventDto.class);
+                    var failedEvent = jsonMapper.readValue(event.payload(), PaymentFailedEventDto.class);
                     paymentFailedProducer.publish(failedEvent);
                     break;
                 default:

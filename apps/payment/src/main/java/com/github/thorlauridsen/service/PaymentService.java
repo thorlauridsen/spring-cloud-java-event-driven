@@ -1,18 +1,19 @@
 package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
-import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.exception.PaymentNotFoundException;
 import com.github.thorlauridsen.model.Payment;
 import com.github.thorlauridsen.model.PaymentCreate;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
 import com.github.thorlauridsen.model.repository.IPaymentRepo;
-import java.util.Random;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Payment service class.
@@ -62,7 +63,7 @@ public class PaymentService {
                 event.getAmount()
         );
         val saved = paymentRepo.save(payment);
-        deduplicationService.record(event.getId());
+        deduplicationService.recordEvent(event.getId());
         outboxService.prepareEvent(saved);
     }
 

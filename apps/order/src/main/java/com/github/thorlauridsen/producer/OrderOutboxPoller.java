@@ -1,14 +1,14 @@
 package com.github.thorlauridsen.producer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.event.OrderCreatedEventDto;
+import com.github.thorlauridsen.model.enumeration.EventType;
 import com.github.thorlauridsen.model.event.OutboxEvent;
-import com.github.thorlauridsen.outbox.BaseOutboxPoller;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
+import com.github.thorlauridsen.outbox.BaseOutboxPoller;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Poller for the outbox table.
@@ -26,16 +26,16 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
     /**
      * Constructor for OrderOutboxPoller.
      *
-     * @param objectMapper         FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
+     * @param jsonMapper           FasterXML Jackson {@link JsonMapper} for serialization/deserialization.
      * @param orderCreatedProducer {@link OrderCreatedProducer} to publish the order created event.
      * @param outboxEventRepo      {@link IOutboxEventRepo} for interacting with the outbox table.
      */
     public OrderOutboxPoller(
-            ObjectMapper objectMapper,
+            JsonMapper jsonMapper,
             OrderCreatedProducer orderCreatedProducer,
             IOutboxEventRepo outboxEventRepo
     ) {
-        super(objectMapper, outboxEventRepo);
+        super(jsonMapper, outboxEventRepo);
         this.orderCreatedProducer = orderCreatedProducer;
     }
 
@@ -54,7 +54,7 @@ public class OrderOutboxPoller extends BaseOutboxPoller {
                 log.warn("Invalid order event type: {}", event.eventType());
                 return;
             }
-            val createdEvent = objectMapper.readValue(event.payload(), OrderCreatedEventDto.class);
+            val createdEvent = jsonMapper.readValue(event.payload(), OrderCreatedEventDto.class);
             orderCreatedProducer.publish(createdEvent);
 
             outboxEventRepo.markAsProcessed(event.eventId());

@@ -1,18 +1,14 @@
 package com.github.thorlauridsen;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.thorlauridsen.model.enumeration.EventType;
-import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.event.PaymentCompletedEventDto;
 import com.github.thorlauridsen.model.Payment;
+import com.github.thorlauridsen.model.enumeration.EventType;
+import com.github.thorlauridsen.model.enumeration.PaymentStatus;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
 import com.github.thorlauridsen.producer.PaymentOutboxPoller;
 import com.github.thorlauridsen.service.PaymentOutboxService;
 import io.awspring.cloud.sns.core.SnsTemplate;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class PaymentOutboxTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private PaymentOutboxPoller paymentOutboxPoller;
@@ -65,7 +65,7 @@ class PaymentOutboxTest {
     }
 
     @Test
-    void processEvent_invalidEventType_emptyOutbox() throws JsonProcessingException {
+    void processEvent_invalidEventType_emptyOutbox() {
         val json = getPaymentCompletedEventJson();
         processEvent(EventType.ORDER_CREATED, json);
 
@@ -143,13 +143,13 @@ class PaymentOutboxTest {
      *
      * @return JSON string of an {@link PaymentCompletedEventDto}.
      */
-    private String getPaymentCompletedEventJson() throws JsonProcessingException {
+    private String getPaymentCompletedEventJson() {
         val event = new PaymentCompletedEventDto(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 199.0
         );
-        return objectMapper.writeValueAsString(event);
+        return jsonMapper.writeValueAsString(event);
     }
 }

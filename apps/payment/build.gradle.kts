@@ -10,7 +10,6 @@ dependencies {
 	implementation(projects.deduplication)
 	implementation(projects.event)
 	implementation(projects.exception)
-	implementation(projects.jackson)
 	implementation(projects.model)
 	implementation(projects.outbox)
 	implementation(projects.producer)
@@ -18,7 +17,8 @@ dependencies {
 	// Spring Boot dependencies
 	implementation(local.springboot.starter)
 	implementation(local.springboot.starter.jpa)
-	implementation(local.springboot.starter.web)
+	implementation(local.springboot.starter.liquibase)
+	implementation(local.springboot.starter.webmvc)
 
 	// Spring Cloud dependencies for AWS SQS and SNS
 	implementation(local.aws.spring.cloud.sqs)
@@ -36,10 +36,8 @@ dependencies {
 	// PostgreSQL database driver
 	runtimeOnly(local.postgres)
 
-	// Liquibase core dependency for database migrations
-	runtimeOnly(local.liquibase.core)
-
 	// Spring Boot test dependencies
+	testImplementation(local.springboot.resttestclient)
 	testImplementation(local.springboot.starter.test)
 
 	// JUnit platform launcher dependency for running JUnit tests

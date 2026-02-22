@@ -7,7 +7,7 @@ plugins {
 dependencies {
     // Spring Boot dependencies
     implementation(local.springboot.starter)
-    implementation(local.springboot.starter.web)
+    implementation(local.springboot.starter.webmvc)
 
     // Springdoc OpenAPI for providing Swagger documentation
     implementation(local.springdoc.openapi.starter.webmvc)
