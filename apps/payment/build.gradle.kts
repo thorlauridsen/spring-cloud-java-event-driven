@@ -24,9 +24,6 @@ dependencies {
 	implementation(local.aws.spring.cloud.sqs)
 	implementation(local.aws.spring.cloud.sns)
 
-	// Jackson datatype JSR310 dependency for serializing Java 8 Date/Time API
-	implementation(local.jackson.datatype.jsr310)
-
 	// Springdoc OpenAPI for providing Swagger documentation
 	implementation(local.springdoc.openapi.starter.webmvc)
 

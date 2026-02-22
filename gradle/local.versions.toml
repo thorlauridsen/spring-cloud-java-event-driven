@@ -1,7 +1,6 @@
 [versions]
 aws-spring-cloud = "4.0.0"
 h2database = "2.4.240"
-jackson = "2.21.0"
 junit-platform-launcher = "6.0.1"
 lombok = "9.2.0"
 postgres = "42.7.10"
@@ -20,9 +19,6 @@ h2database = { module = "com.h2database:h2", version.ref = "h2database" }
 
 # JUnit platform launcher for running JUnit tests
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform-launcher" }
-
-# FasterXML Jackson libraries for JSON serialization
-jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 # PostgreSQL for a live database
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
