@@ -1,7 +1,7 @@
 [versions]
 aws-spring-cloud = "4.0.0"
 h2database = "2.4.240"
-junit-platform-launcher = "6.0.1"
+junit-platform-launcher = "6.0.3"
 lombok = "9.2.0"
 postgres = "42.7.10"
 springboot = "4.0.3"
