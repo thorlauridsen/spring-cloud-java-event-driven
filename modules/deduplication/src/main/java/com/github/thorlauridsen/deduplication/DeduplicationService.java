@@ -2,11 +2,12 @@ package com.github.thorlauridsen.deduplication;
 
 import com.github.thorlauridsen.model.event.ProcessedEvent;
 import com.github.thorlauridsen.model.repository.IProcessedEventRepo;
-import java.time.OffsetDateTime;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * Service for deduplicating events.
@@ -33,7 +34,7 @@ public class DeduplicationService {
      *
      * @param eventId UUID of the event to record.
      */
-    public void record(UUID eventId) {
+    public void recordEvent(UUID eventId) {
         val processedEvent = new ProcessedEvent(
                 eventId,
                 OffsetDateTime.now()

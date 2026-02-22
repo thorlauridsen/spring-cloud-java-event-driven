@@ -1,6 +1,5 @@
 package com.github.thorlauridsen;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.deduplication.ProcessedEventJpaRepo;
 import com.github.thorlauridsen.dto.PaymentDto;
 import com.github.thorlauridsen.model.event.OrderCreatedEvent;
@@ -8,24 +7,22 @@ import com.github.thorlauridsen.outbox.OutboxEventJpaRepo;
 import com.github.thorlauridsen.persistence.PaymentJpaRepo;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sns.core.SnsTemplate;
-import java.util.UUID;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static com.github.thorlauridsen.controller.BaseEndpoint.PAYMENT_BASE_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
-class PaymentControllerTest extends BaseMockMvc {
+class PaymentControllerTest extends BaseControllerTest {
 
-    private final ObjectMapper objectMapper;
     private final OutboxEventJpaRepo outboxEventRepo;
     private final PaymentJpaRepo paymentRepo;
     private final PaymentService paymentService;
@@ -41,15 +38,11 @@ class PaymentControllerTest extends BaseMockMvc {
 
     @Autowired
     public PaymentControllerTest(
-            MockMvc mockMvc,
-            ObjectMapper objectMapper,
             OutboxEventJpaRepo outboxEventRepo,
             PaymentJpaRepo paymentRepo,
             PaymentService paymentService,
             ProcessedEventJpaRepo processedEventRepo
     ) {
-        super(mockMvc);
-        this.objectMapper = objectMapper;
         this.outboxEventRepo = outboxEventRepo;
         this.paymentRepo = paymentRepo;
         this.paymentService = paymentService;
@@ -67,14 +60,14 @@ class PaymentControllerTest extends BaseMockMvc {
     }
 
     @Test
-    void getPayment_noPaymentExists() throws Exception {
+    void getPayment_noPaymentExists() {
         val orderId = UUID.randomUUID();
-        val response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + orderId);
-        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        val response = get(PAYMENT_BASE_ENDPOINT + "/" + orderId);
+        response.expectStatus().isNotFound();
     }
 
     @Test
-    void processOrderCreated_getPayment_paymentExists() throws Exception {
+    void processOrderCreated_getPayment_paymentExists() {
         val event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
@@ -83,11 +76,10 @@ class PaymentControllerTest extends BaseMockMvc {
         );
         paymentService.processOrderCreated(event);
 
-        val response = mockGet(PAYMENT_BASE_ENDPOINT + "/" + event.getOrderId());
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        val response = get(PAYMENT_BASE_ENDPOINT + "/" + event.getOrderId());
+        response.expectStatus().isOk();
 
-        val responseJson = response.getContentAsString();
-        val payment = objectMapper.readValue(responseJson, PaymentDto.class);
+        val payment = response.expectBody(PaymentDto.class).returnResult().getResponseBody();
 
         assertNotNull(payment);
         assertEquals(event.getOrderId(), payment.orderId());

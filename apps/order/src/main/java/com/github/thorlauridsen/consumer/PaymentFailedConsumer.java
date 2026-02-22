@@ -1,11 +1,11 @@
 package com.github.thorlauridsen.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.event.PaymentFailedEventDto;
 import com.github.thorlauridsen.service.OrderService;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Consumer for the {@link PaymentFailedEventDto}.
@@ -20,14 +20,14 @@ public class PaymentFailedConsumer extends BaseEventConsumer<PaymentFailedEventD
     /**
      * Constructor for PaymentFailedConsumer.
      *
-     * @param objectMapper FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
+     * @param jsonMapper   FasterXML Jackson {@link JsonMapper} for serialization/deserialization.
      * @param orderService {@link OrderService} to process consumed events.
      */
     public PaymentFailedConsumer(
-            ObjectMapper objectMapper,
+            JsonMapper jsonMapper,
             OrderService orderService
     ) {
-        super(objectMapper);
+        super(jsonMapper);
         this.orderService = orderService;
     }
 

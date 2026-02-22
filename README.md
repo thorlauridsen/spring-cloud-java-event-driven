@@ -323,8 +323,6 @@ root
 │   │   └─ build.gradle.kts
 │   ├─ exception
 │   │   └─ build.gradle.kts
-│   ├─ jackson
-│   │   └─ build.gradle.kts
 │   ├─ model
 │   │   └─ build.gradle.kts
 │   ├─ outbox
@@ -374,7 +372,6 @@ order
 │─ consumer
 │─ event
 │─ exception
-│─ jackson
 │─ model
 │─ outbox
 └─ producer
@@ -383,7 +380,6 @@ payment
 │─ consumer
 │─ event
 │─ exception
-│─ jackson
 │─ model
 │─ outbox
 └─ producer
@@ -405,7 +401,7 @@ producer
 │─ event
 └─ model
 
-exception, jackson and model has no dependencies
+exception and model has no dependencies
 ```
 
 ## Meta

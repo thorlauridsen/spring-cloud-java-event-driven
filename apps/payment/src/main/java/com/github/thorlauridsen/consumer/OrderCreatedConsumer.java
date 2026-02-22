@@ -1,10 +1,10 @@
 package com.github.thorlauridsen.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.event.OrderCreatedEventDto;
 import com.github.thorlauridsen.service.PaymentService;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Consumer for the {@link OrderCreatedEventDto}.
@@ -18,14 +18,14 @@ public class OrderCreatedConsumer extends BaseEventConsumer<OrderCreatedEventDto
     /**
      * Constructor for OrderCreatedConsumer.
      *
-     * @param objectMapper   FasterXML Jackson {@link ObjectMapper} for serialization/deserialization.
+     * @param jsonMapper     FasterXML Jackson {@link JsonMapper} for serialization/deserialization.
      * @param paymentService {@link PaymentService} to process consumed events.
      */
     public OrderCreatedConsumer(
-            ObjectMapper objectMapper,
+            JsonMapper jsonMapper,
             PaymentService paymentService
     ) {
-        super(objectMapper);
+        super(jsonMapper);
         this.paymentService = paymentService;
     }
 

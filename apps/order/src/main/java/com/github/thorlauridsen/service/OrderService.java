@@ -1,18 +1,19 @@
 package com.github.thorlauridsen.service;
 
 import com.github.thorlauridsen.deduplication.DeduplicationService;
-import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.exception.OrderNotFoundException;
 import com.github.thorlauridsen.model.Order;
 import com.github.thorlauridsen.model.OrderCreate;
+import com.github.thorlauridsen.model.enumeration.OrderStatus;
 import com.github.thorlauridsen.model.event.PaymentCompletedEvent;
 import com.github.thorlauridsen.model.event.PaymentFailedEvent;
 import com.github.thorlauridsen.model.repository.IOrderRepo;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * Order service class.
@@ -51,7 +52,7 @@ public class OrderService {
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.COMPLETED);
-        deduplicationService.record(event.getId());
+        deduplicationService.recordEvent(event.getId());
     }
 
     /**
@@ -72,7 +73,7 @@ public class OrderService {
             return;
         }
         updateOrder(event.getOrderId(), OrderStatus.CANCELLED);
-        deduplicationService.record(event.getId());
+        deduplicationService.recordEvent(event.getId());
     }
 
     /**

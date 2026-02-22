@@ -1,6 +1,5 @@
 package com.github.thorlauridsen.outbox;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.thorlauridsen.model.event.OutboxEvent;
 import com.github.thorlauridsen.model.repository.IOutboxEventRepo;
 import jakarta.transaction.Transactional;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.scheduling.annotation.Scheduled;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Abstract class representing an outbox poller.
@@ -26,7 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Slf4j
 public abstract class BaseOutboxPoller {
 
-    protected final ObjectMapper objectMapper;
+    protected final JsonMapper jsonMapper;
     protected final IOutboxEventRepo outboxEventRepo;
 
     /**
