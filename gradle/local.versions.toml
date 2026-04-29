@@ -1,5 +1,5 @@
 [versions]
-aws-spring-cloud = "4.0.1"
+aws-spring-cloud = "4.0.2"
 h2database = "2.4.240"
 junit-platform-launcher = "6.0.3"
 lombok = "9.4.0"
